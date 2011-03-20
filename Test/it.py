@@ -23,11 +23,19 @@ app = QtGui.QApplication(sys.argv)
 
 Main = QtGui.QMainWindow()
 
+img = QtGui.QPixmap(fnm)
 
-scene = QtGui.QGraphicsScene()
-view = QtGui.QGraphicsView(scene);
-item  = QtGui.QGraphicsPixmapItem(QtGui.QPixmap(fnm));
-scene.addItem(item);
-view.show();
+lbl = QtGui.QLabel(fnm)
+lbl.setPixmap(img)
+Main.setCentralWidget(lbl)
+
+
+Main.show()
+
+## scene = QtGui.QGraphicsScene()
+## view = QtGui.QGraphicsView(scene);
+## item  = QtGui.QGraphicsPixmapItem(QtGui.QPixmap(fnm));
+## scene.addItem(item);
+## view.show();
 
 sys.exit(app.exec_())
