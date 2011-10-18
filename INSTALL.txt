@@ -1,0 +1,5 @@
+Mac
+qmake -spec macx-g++
+make
+
+
