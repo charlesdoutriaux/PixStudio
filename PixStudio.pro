@@ -15,11 +15,14 @@ TEMPLATE = app
 
 SOURCES += Src/main.cpp \
 	   Src/mainwindow.cpp \
-           Src/preferences.cpp
+           Src/preferences.cpp \
+           Src/QPathListWidget.cpp
 
 HEADERS += \
     Include/mainwindow.h \
-    Include/preferences.h
+    Include/preferences.h \
+    Include/QPathListWidget.h
+
 
 
 
