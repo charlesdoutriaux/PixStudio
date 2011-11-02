@@ -1,6 +1,6 @@
 #include <QtGui>
 #include <Qt>
-#include "Include/preferences.h"
+#include <preferences.h>
 
 QPrefs::QPrefs() {
   setupUi();

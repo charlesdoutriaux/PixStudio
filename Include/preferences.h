@@ -1,6 +1,6 @@
 #include <QFrame>
 #include <QtGui>
-#include "Include/QPathListWidget.h"
+#include <QPathListWidget.h>
 
 #ifndef QPREFS_H
 #define QPREFS_H

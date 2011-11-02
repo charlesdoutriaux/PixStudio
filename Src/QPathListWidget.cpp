@@ -1,6 +1,6 @@
 #include <QtGui>
 #include <Qt>
-#include "Include/QPathListWidget.h"
+#include <QPathListWidget.h>
 
 QPathListWidget::QPathListWidget() {
 };

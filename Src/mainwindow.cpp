@@ -1,5 +1,5 @@
-#include "Include/mainwindow.h"
-#include "Include/preferences.h"
+#include <mainwindow.h>
+#include <preferences.h>
 #include <QtGui>
 #include <Qt>
 
