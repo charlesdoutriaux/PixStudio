@@ -1,6 +1,7 @@
 #include <QtGui>
 #include <Qt>
 #include <preferences.h>
+#include <qtthumbwheel.h>
 
 QPrefs::QPrefs() {
   setupUi();
@@ -124,6 +125,11 @@ void QPrefs::setupUi(void) {
   this->distClusterUnits->addItem("m");
   this->distClusterUnits->setCurrentIndex(0);
   h->addWidget(this->distClusterUnits);
+
+
+  QtThumbWheel *wheel = new QtThumbWheel();
+  wheel->setRange(-100, 100);
+  h->addWidget(wheel);
   /* Add Distamce Cluster to Sep Layout */
   sepLayout->addLayout(h);
 
