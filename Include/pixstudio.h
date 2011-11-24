@@ -8,3 +8,9 @@ struct pix_entry {
   time_t time;
   int hasExif;
 };
+
+struct pix_entries {
+  struct pix_entry entry;
+  struct pix_entries *next;
+};
+

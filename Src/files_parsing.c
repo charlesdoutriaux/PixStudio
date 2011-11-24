@@ -56,30 +56,30 @@ float readAngle(ExifEntry *entry){
  r = exif_get_rational (entry->data , o);
  return (float)r.numerator/(float)r.denominator + sec/3600.;
 }
-void scanDir(char *path, struct pix_entry *firstEntry, int nmax) {
+void scanDir(char *path, struct pix_entries *entries) {
  DIR *diri;
  struct dirent *dire;
  FILE *afile=NULL;
  struct stat buf;
- ExifLoader *lExif;
  ExifData *dExif;
- ExifContent *cExif;
  ExifEntry *eExif;
  int err;
  unsigned int i,j;
  char fnm[NAME_MAX_LENGTH];
- int goodExif=0;
- int nentries=0;
- struct pix_entry pixEntry;
- //struct pix_group *pixGrp, *iter;
- //lExif = exif_loader_new();
+ struct pix_entries *pixEntry;
+ int nentries;
+
+ nentries = 0;
  diri = opendir(path);
- while ((dire = readdir(diri))!=NULL) {
+ pixEntry = entries;
+ while (pixEntry->next!=NULL) {
+   pixEntry=pixEntry->next;
+ }
+while ((dire = readdir(diri))!=NULL) {
    strcpy(fnm,path);
    strcat(fnm,"/");
    strcat(fnm,dire->d_name);
    err = stat(fnm,&buf);
-   //printf("Ok we have: %s, %i\n",fnm,err);
    if (err==-1) continue;
    // Directory?
    if (S_ISDIR(buf.st_mode)) {
@@ -87,20 +87,25 @@ void scanDir(char *path, struct pix_entry *firstEntry, int nmax) {
      continue;
    }
    // Ok now trying to load the exif info
-   //printf("Ok loading: %s\n",fnm);
-   //dExif = exif_loader_write_file(lExif,fnm);
    dExif = exif_data_new_from_file(fnm);
    if ((isOkFromExt(dire->d_name)==0)||(dExif!=NULL)) {
-     //Ok it's a valid file, add an entry
-     pixEntry = firstEntry[nentries];
-     strcpy(pixEntry.name,fnm);
-     pixEntry.hasExif=0;
-     pixEntry.lat=1.e20;
-     pixEntry.lon=1.e20;
-     pixEntry.time=buf.st_mtime; // by default time of last modif
+     //Ok it's a valid file, add an entry, go to last entry
+     if (strcmp(pixEntry->entry.name,"")!=0) { /* already full need to createa new one */
+       if (pixEntry->next!=NULL) {
+	 printf("we have a huge problem weare in the middle of something !\n");
+       }
+       pixEntry->next = malloc(sizeof(struct pix_entries));
+       pixEntry=pixEntry->next;
+       pixEntry->next= NULL;
+     }
+     strcpy(pixEntry->entry.name,fnm);
+     pixEntry->entry.hasExif=0;
+     pixEntry->entry.lat=1.e20;
+     pixEntry->entry.lon=1.e20;
+     pixEntry->entry.time=buf.st_mtime; // by default time of last modif
      // Ok we have exif
      if (dExif!=NULL) {
-       pixEntry.hasExif=1;
+       pixEntry->entry.hasExif=1;
        //eExif = exif_data_get_entry(dExif,EXIF_TAG_GPS_INFO_IFD_POINTER);
        //if (eExif!=NULL) printf("LAT TAG: %p, %i (%i), f:%i\n",eExif,eExif->tag,EXIF_TAG_GPS_LATITUDE,eExif->format);
        //for (i=0;i<EXIF_IFD_COUNT;i++) {
@@ -110,37 +115,28 @@ void scanDir(char *path, struct pix_entry *firstEntry, int nmax) {
 	   eExif = dExif->ifd[EXIF_IFD_GPS]->entries[j];
       	   if (eExif->tag == EXIF_TAG_GPS_LATITUDE) {
 	     //exif_data_dump(dExif);
-	     pixEntry.lat=readAngle(eExif);
+	     pixEntry->entry.lat=readAngle(eExif);
 	     // ??? code for negative latitudes?  Need to Test
 	     for (i=0;i<dExif->ifd[EXIF_IFD_GPS]->count;i++) {
 	       eExif = dExif->ifd[EXIF_IFD_GPS]->entries[i];
 	       if (eExif->tag==EXIF_TAG_GPS_LATITUDE_REF) {
-		 if (strcmp(eExif->data,"S")==0) pixEntry.lat=-pixEntry.lat;
+		 if (strcmp(eExif->data,"S")==0) pixEntry->entry.lat=-pixEntry->entry.lat;
 	       }
 	     }
 	   }
 	   else if (eExif->tag == EXIF_TAG_GPS_LONGITUDE) {
-	     pixEntry.lon=readAngle(eExif);
+	     pixEntry->entry.lon=readAngle(eExif);
 	   }
 	 }
 	 for (j=0;j<dExif->ifd[EXIF_IFD_EXIF]->count;j++) {
 	   eExif = dExif->ifd[EXIF_IFD_EXIF]->entries[j];
 	   if (eExif->tag==EXIF_TAG_DATE_TIME_ORIGINAL) {
-	     pixEntry.time = readTime(eExif);
+	     pixEntry->entry.time = readTime(eExif);
 	   }
 	 }
 	 exif_data_free(dExif);
      }
-     if (goodExif==0) {
-       printf("\t\tINSERT CODE FOR FILE STAT ANALYSIS HERE\n");
-     }
-   //exif_data_dump(dExif);
-     firstEntry[nentries]=pixEntry;
      nentries+=1;
-     if (nentries==nmax) {
-       printf("We found %i files, this the max, stopping here\n",nmax);
-       return;
-     };
    };
  }
   printf("Discovered: %i valid files\n",nentries);
@@ -149,7 +145,7 @@ void scanDir(char *path, struct pix_entry *firstEntry, int nmax) {
 int main(int argc, char **argv) {
   char pathin[NAME_MAX_LENGTH];
   int i;
-  struct pix_entry all[512];
+  struct pix_entries all,*iter;
   printf("Nargs: %i\n",argc);
   if (argc==1) {
     strcpy(pathin,"/Users/doutriaux1/Desktop");
@@ -157,6 +153,15 @@ int main(int argc, char **argv) {
   else {
     strcpy(pathin,argv[1]);
   }
-  scanDir(pathin,&all[0],512);
+  scanDir(pathin,&all);
+  iter =&all;
+  i = 1 ;
+  while (iter->next!=NULL) {
+    printf("%i: %s--\n",i,iter->entry.name);
+    i+=1;
+    iter=iter->next;
+  }
+  printf("%i:%s--\n",i,iter->entry.name);
+  printf("Back we think we have: %i entries\n",i);
 }
 
