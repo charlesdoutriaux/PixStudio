@@ -10,6 +10,7 @@ struct pix_entry {
 };
 
 struct pix_entries {
+  struct pix_entries *prev;
   struct pix_entry entry;
   struct pix_entries *next;
 };

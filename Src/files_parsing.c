@@ -90,11 +90,12 @@ while ((dire = readdir(diri))!=NULL) {
    dExif = exif_data_new_from_file(fnm);
    if ((isOkFromExt(dire->d_name)==0)||(dExif!=NULL)) {
      //Ok it's a valid file, add an entry, go to last entry
-     if (strcmp(pixEntry->entry.name,"")!=0) { /* already full need to createa new one */
+     if (pixEntry->prev!=NULL) { /* already full need to createa new one */
        if (pixEntry->next!=NULL) {
 	 printf("we have a huge problem weare in the middle of something !\n");
        }
        pixEntry->next = malloc(sizeof(struct pix_entries));
+       pixEntry->next->prev=pixEntry;
        pixEntry=pixEntry->next;
        pixEntry->next= NULL;
      }
@@ -146,6 +147,8 @@ int main(int argc, char **argv) {
   char pathin[NAME_MAX_LENGTH];
   int i;
   struct pix_entries all,*iter;
+  all.next=NULL;
+  all.prev=NULL;
   printf("Nargs: %i\n",argc);
   if (argc==1) {
     strcpy(pathin,"/Users/doutriaux1/Desktop");
