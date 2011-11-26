@@ -56,8 +56,8 @@ float readAngle(ExifEntry *entry){
  r = exif_get_rational (entry->data , o);
  return (float)r.numerator/(float)r.denominator + sec/3600.;
 }
-void scanDir(char *path, struct pix_entries *entries) {
- DIR *diri;
+void scanDir(char *path, struct pix_entries *entries,unsigned int sub) {
+  DIR *diri,*dirtmp;
  struct dirent *dire;
  FILE *afile=NULL;
  struct stat buf;
@@ -69,8 +69,13 @@ void scanDir(char *path, struct pix_entries *entries) {
  struct pix_entries *pixEntry;
  int nentries;
 
+ //printf("Lookinga at : %s\n",path);
  nentries = 0;
  diri = opendir(path);
+ if (diri==NULL) {
+   // Ok something bad happened
+   return;
+ }
  pixEntry = entries;
  while (pixEntry->next!=NULL) {
    pixEntry=pixEntry->next;
@@ -83,14 +88,17 @@ while ((dire = readdir(diri))!=NULL) {
    if (err==-1) continue;
    // Directory?
    if (S_ISDIR(buf.st_mode)) {
-     //printf("\tskipping subdirectory\n");
+     if ((strcmp(&fnm[strlen(fnm)-2],"/.")==0)||(strcmp(&fnm[strlen(fnm)-3],"/..")==0)) {
+       continue;
+     };
+     if (sub==1) scanDir(fnm,entries,sub);
      continue;
    }
    // Ok now trying to load the exif info
    dExif = exif_data_new_from_file(fnm);
    if ((isOkFromExt(dire->d_name)==0)||(dExif!=NULL)) {
      //Ok it's a valid file, add an entry, go to last entry
-     if (pixEntry->prev!=NULL) { /* already full need to createa new one */
+     if (strcmp(pixEntry->entry.name,"")!=0) { /* already full need to createa new one */
        if (pixEntry->next!=NULL) {
 	 printf("we have a huge problem weare in the middle of something !\n");
        }
@@ -140,7 +148,7 @@ while ((dire = readdir(diri))!=NULL) {
      nentries+=1;
    };
  }
-  printf("Discovered: %i valid files\n",nentries);
+//printf("Discovered: %i valid files\n",nentries);
 }
 
 int main(int argc, char **argv) {
@@ -156,7 +164,8 @@ int main(int argc, char **argv) {
   else {
     strcpy(pathin,argv[1]);
   }
-  scanDir(pathin,&all);
+  scanDir(pathin,&all,1);
+  scanDir(pathin,&all,1);
   iter =&all;
   i = 1 ;
   while (iter->next!=NULL) {
