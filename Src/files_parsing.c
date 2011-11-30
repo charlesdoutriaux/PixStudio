@@ -268,7 +268,7 @@ int main(int argc, char **argv) {
   printf("Back we think we have: %i entries\n",entrieslen(iter));
   iter = entriesget(&all,5);
   printf("Got: %s \n",iter->entry.name);
-  entriesswap(&all,1,10);
+  entriesswap(&all,0,10);
   printf("------------------------\n");
   printf("Back we think we have: %i entries\n",entrieslen(iter));
 }
