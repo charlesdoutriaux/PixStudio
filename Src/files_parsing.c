@@ -111,7 +111,7 @@ void scanDir(char *path, struct pix_entries *entries,unsigned int sub) {
        pixEntry=pixEntry->next;
        pixEntry->next= NULL;
      }
-     strcpy(pixEntry->entry.name,fnm);
+     strcpy(pixEntry->entry.name,dire->d_name);
      pixEntry->entry.hasExif=0;
      pixEntry->entry.lat=1.e20;
      pixEntry->entry.lon=1.e20;
@@ -172,12 +172,35 @@ int entrieslen(struct pix_entries *entries) {
   }
   i=0;
   while (entries->next!=NULL) {
+    //printf("%i: %s--\n",i,entries->entry.name);
+    i+=1;
+    entries=entries->next;
+  }
+  //printf("%i: %s--\n",i,entries->entry.name);
+  return i+1;
+}
+void entriesprint(struct pix_entries *entries) {
+  int i;
+
+  if (entries==NULL) return;
+
+  // Now rewind
+  while (entries->prev!=NULL) {
+    entries=entries->prev;
+  }
+
+  // Empty ?
+  if (strcmp(entries->entry.name,"")==0) {
+    return;
+  }
+  i=0;
+  while (entries->next!=NULL) {
     printf("%i: %s--\n",i,entries->entry.name);
     i+=1;
     entries=entries->next;
   }
   printf("%i: %s--\n",i,entries->entry.name);
-  return i+1;
+  return;
 }
 
 struct pix_entries *entriesget(struct pix_entries *entries, int index) {
@@ -209,40 +232,91 @@ struct pix_entries *entriesget(struct pix_entries *entries, int index) {
 }
 
 void entriesswap(struct pix_entries *entries,int i1,int i2) {
-  struct pix_entries *tmp1,*tmp2,*tmp;
+  struct pix_entries *e0,*e1,*e2,*e3,*e4,*e5;
   int i3;
   i3 = entrieslen(entries);
-  if (i2>=i3) return;
-  if (i1<0) return;
+  if (i2>=i3) {
+    printf("index too big\n");
+    return;
+  }
+  if (i1<0) {
+    printf("neg index forswap\n");
+    return;
+  }
   if (i2==i1) return;
   if (i2<i1){
     i3=i1;
-    i2=i1;
-    i1=3;
+    i1=i2;
+    i2=i3;
+    printf("swapped it is now: %i, to %i\n",i1,i2);
   }
 
-  tmp1 = entriesget(entries,i1);
-  tmp2 = entriesget(entries,i2);
-  // Connect i1-1
-  tmp=tmp1->prev;
-  if (tmp!=NULL) { // ok it did have a previous elt
-    tmp->next=tmp2;
+  /* First gets thepointers */
+  e1 = entriesget(entries,i1);
+  e0=e1->prev;
+  e2=e1->next;
+  e4 = entriesget(entries,i2);
+  e3=e4->prev;
+  e5=e4->next;
+
+  //printf("e0,e1,e2,e3,e4,e5: %p,%p,%p,%p,%p,%p\n",e0,e1,e2,e3,e4,e5);
+  printf("IN : e0->next :%s,e1->prev:%s,e1->next:%s,e2->prev=%s,e2->next: %s,e3->prev:%s, e3->next=%s,e4->prev: %s, e4->next:%s, e5->prev=%s, e5->next:%s\n",e0->next->entry.name,e1->prev->entry.name,e1->next->entry.name,e2->prev->entry.name,e2->next->entry.name,e3->prev->entry.name,e3->next->entry.name,e4->prev->entry.name,e4->next->entry.name,e5->prev->entry.name,e5->next->entry.name);
+  if (e0!=NULL) {
+    e0->next = e4;
+    printf("IN1: e0->next :%s,e1->prev:%s,e1->next:%s,e2->prev=%s,e2->next: %s,e3->prev:%s, e3->next=%s,e4->prev: %s, e4->next:%s, e5->prev=%s, e5->next:%s\n",e0->next->entry.name,e1->prev->entry.name,e1->next->entry.name,e2->prev->entry.name,e2->next->entry.name,e3->prev->entry.name,e3->next->entry.name,e4->prev->entry.name,e4->next->entry.name,e5->prev->entry.name,e5->next->entry.name);
   }
-  tmp=tmp1->next;
-  tmp->prev=tmp2;
-  tmp=tmp2->prev;
-  tmp->next = tmp1;
-  tmp=tmp2->next;
-  if (tmp!=NULL) {
-    tmp->prev=tmp1;
+  e1->prev=e3;
+  printf("IN2: e0->next :%s,e1->prev:%s,e1->next:%s,e2->prev=%s,e2->next: %s,e3->prev:%s, e3->next=%s,e4->prev: %s, e4->next:%s, e5->prev=%s, e5->next:%s\n",e0->next->entry.name,e1->prev->entry.name,e1->next->entry.name,e2->prev->entry.name,e2->next->entry.name,e3->prev->entry.name,e3->next->entry.name,e4->prev->entry.name,e4->next->entry.name,e5->prev->entry.name,e5->next->entry.name);
+  e1->next=e5;
+  printf("IN3: e0->next :%s,e1->prev:%s,e1->next:%s,e2->prev=%s,e2->next: %s,e3->prev:%s, e3->next=%s,e4->prev: %s, e4->next:%s, e5->prev=%s, e5->next:%s\n",e0->next->entry.name,e1->prev->entry.name,e1->next->entry.name,e2->prev->entry.name,e2->next->entry.name,e3->prev->entry.name,e3->next->entry.name,e4->prev->entry.name,e4->next->entry.name,e5->prev->entry.name,e5->next->entry.name);
+  e2->prev=e4;
+  printf("IN4: e0->next :%s,e1->prev:%s,e1->next:%s,e2->prev=%s,e2->next: %s,e3->prev:%s, e3->next=%s,e4->prev: %s, e4->next:%s, e5->prev=%s, e5->next:%s\n",e0->next->entry.name,e1->prev->entry.name,e1->next->entry.name,e2->prev->entry.name,e2->next->entry.name,e3->prev->entry.name,e3->next->entry.name,e4->prev->entry.name,e4->next->entry.name,e5->prev->entry.name,e5->next->entry.name);
+  e3->next=e1;
+  printf("IN5: e0->next :%s,e1->prev:%s,e1->next:%s,e2->prev=%s,e2->next: %s,e3->prev:%s, e3->next=%s,e4->prev: %s, e4->next:%s, e5->prev=%s, e5->next:%s\n",e0->next->entry.name,e1->prev->entry.name,e1->next->entry.name,e2->prev->entry.name,e2->next->entry.name,e3->prev->entry.name,e3->next->entry.name,e4->prev->entry.name,e4->next->entry.name,e5->prev->entry.name,e5->next->entry.name);
+  e4->prev=e0;
+  printf("IN6: e0->next :%s,e1->prev:%s,e1->next:%s,e2->prev=%s,e2->next: %s,e3->prev:%s, e3->next=%s,e4->prev: %s, e4->next:%s, e5->prev=%s, e5->next:%s\n",e0->next->entry.name,e1->prev->entry.name,e1->next->entry.name,e2->prev->entry.name,e2->next->entry.name,e3->prev->entry.name,e3->next->entry.name,e4->prev->entry.name,e4->next->entry.name,e5->prev->entry.name,e5->next->entry.name);
+  e4->next=e2;
+  printf("IN7: e0->next :%s,e1->prev:%s,e1->next:%s,e2->prev=%s,e2->next: %s,e3->prev:%s, e3->next=%s,e4->prev: %s, e4->next:%s, e5->prev=%s, e5->next:%s\n",e0->next->entry.name,e1->prev->entry.name,e1->next->entry.name,e2->prev->entry.name,e2->next->entry.name,e3->prev->entry.name,e3->next->entry.name,e4->prev->entry.name,e4->next->entry.name,e5->prev->entry.name,e5->next->entry.name);
+  e5->prev=e1;
+  //printf("e0,e1,e2,e3,e4,e5: %s,%s,%s,%s,%s,%s\n",e0,e1,e2,e3,e4,e5);
+  printf("OUT: e0->next :%s,e1->prev:%s,e1->next:%s,e2->prev=%s,e2->next: %s,e3->prev:%s, e3->next=%s,e4->prev: %s, e4->next:%s, e5->prev=%s, e5->next:%s\n",e0->next->entry.name,e1->prev->entry.name,e1->next->entry.name,e2->prev->entry.name,e2->next->entry.name,e3->prev->entry.name,e3->next->entry.name,e4->prev->entry.name,e4->next->entry.name,e5->prev->entry.name,e5->next->entry.name);
+}
+
+
+int entriespartition(struct pix_entries *entries, int left, int right, int ipivot) {
+  struct pix_entries *pivot,*tmp;
+  int i,istore;
+  pivot = entriesget(entries,ipivot);
+  entriesswap(entries,ipivot,right);
+  istore=left;
+  for (i=left;i<right;i++) {
+    tmp = entriesget(entries,i);
+    // For now time comparison only
+    printf("diff: %i, %i, %f\n",i,istore,difftime(pivot->entry.time,tmp->entry.time));
+    if (difftime(pivot->entry.time,tmp->entry.time)>0.) {
+      printf("SWAPPING: %i, %i\n",i,istore);
+      entriesswap(entries,i,istore);
+      istore+=1;
+    }
   }
-  
-  tmp=tmp1->prev;
-  tmp1->prev=tmp2->prev;
-  tmp2->prev=tmp;
-  tmp=tmp1->next;
-  tmp1->next=tmp2->next;
-  tmp2->next=tmp;
+  printf("Finally: swapping: %i, %i\n",istore,right);
+  entriesswap(entries,istore,right);
+  return istore;
+}
+
+void entriesquicksort(struct pix_entries *entries,int left, int right) {
+  int i,ipivot,inewpivot;
+  struct pix_entries *tmp;
+  printf("quicksort: %i,%i\n",left,right);
+  if (left<right) {
+    ipivot = left + (right-left)/2;
+    ipivot=left+1;
+    printf("pivot chose: %i\n",ipivot);
+    inewpivot = entriespartition(entries,left,right,ipivot);
+    printf("got new pivot: %i\n",inewpivot);
+    entriesquicksort(entries,left,inewpivot-1);
+    entriesquicksort(entries,inewpivot+1,right);
+  }
 }
 
 
@@ -266,10 +340,16 @@ int main(int argc, char **argv) {
   scanDir(pathin,&all,1);
   iter =&all;
   printf("Back we think we have: %i entries\n",entrieslen(iter));
+  entriesprint(&all);
   iter = entriesget(&all,5);
   printf("Got: %s \n",iter->entry.name);
-  entriesswap(&all,0,10);
-  printf("------------------------\n");
-  printf("Back we think we have: %i entries\n",entrieslen(iter));
+  entriesswap(&all,1,2);
+  printf("---------SWAPPED------------\n");
+  //entriesprint(&all);
+  printf("SORTING\n");
+  //entriespartition(&all,0,13,6);
+    //entriesquicksort(&all,0,entrieslen(&all)-1);
+  printf("-------SORTED---------\n");
+  //entriesprint(&all);
 }
 
