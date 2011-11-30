@@ -79,10 +79,14 @@ void scanDir(char *path, struct pix_entries *entries,unsigned int sub) {
  pixEntry = entries;
  while (pixEntry->next!=NULL) {
    pixEntry=pixEntry->next;
+   nentries+=1;
  }
-while ((dire = readdir(diri))!=NULL) {
+ //printf("ok we skipped: %i\n",nentries);
+ nentries=0;
+ while ((dire = readdir(diri))!=NULL) {
    strcpy(fnm,path);
    strcat(fnm,"/");
+   //printf("name: %s\n",dire->d_name);
    strcat(fnm,dire->d_name);
    err = stat(fnm,&buf);
    if (err==-1) continue;
@@ -91,7 +95,7 @@ while ((dire = readdir(diri))!=NULL) {
      if ((strcmp(&fnm[strlen(fnm)-2],"/.")==0)||(strcmp(&fnm[strlen(fnm)-3],"/..")==0)) {
        continue;
      };
-     if (sub==1) scanDir(fnm,entries,sub);
+     if (sub>=1) scanDir(fnm,entries,sub+1);
      continue;
    }
    // Ok now trying to load the exif info
@@ -148,8 +152,99 @@ while ((dire = readdir(diri))!=NULL) {
      nentries+=1;
    };
  }
+ //printf("Closing: %s\n",path);
+ closedir(diri);
 //printf("Discovered: %i valid files\n",nentries);
 }
+int entrieslen(struct pix_entries *entries) {
+  int i;
+
+  if (entries==NULL) return 0;
+
+  // Now rewind
+  while (entries->prev!=NULL) {
+    entries=entries->prev;
+  }
+
+  // Empty ?
+  if (strcmp(entries->entry.name,"")==0) {
+    return 0;
+  }
+  i=0;
+  while (entries->next!=NULL) {
+    printf("%i: %s--\n",i,entries->entry.name);
+    i+=1;
+    entries=entries->next;
+  }
+  printf("%i: %s--\n",i,entries->entry.name);
+  return i+1;
+}
+
+struct pix_entries *entriesget(struct pix_entries *entries, int index) {
+  int i;
+  if (entries==NULL) return NULL;
+
+  // Now rewind
+  while (entries->prev!=NULL) {
+    entries=entries->prev;
+  }
+
+  // Empty ?
+  if (strcmp(entries->entry.name,"")==0) {
+    return entries;
+  }
+  i=0;
+  while ((i<index)&&(entries->next!=NULL)) {
+    //printf("%i: %s--\n",i,iter->entry.name);
+    i+=1;
+    entries=entries->next;
+  }
+  if (i==index) {
+    return entries;
+  }
+  else {
+    return NULL;
+  }
+
+}
+
+void entriesswap(struct pix_entries *entries,int i1,int i2) {
+  struct pix_entries *tmp1,*tmp2,*tmp;
+  int i3;
+  i3 = entrieslen(entries);
+  if (i2>=i3) return;
+  if (i1<0) return;
+  if (i2==i1) return;
+  if (i2<i1){
+    i3=i1;
+    i2=i1;
+    i1=3;
+  }
+
+  tmp1 = entriesget(entries,i1);
+  tmp2 = entriesget(entries,i2);
+  // Connect i1-1
+  tmp=tmp1->prev;
+  if (tmp!=NULL) { // ok it did have a previous elt
+    tmp->next=tmp2;
+  }
+  tmp=tmp1->next;
+  tmp->prev=tmp2;
+  tmp=tmp2->prev;
+  tmp->next = tmp1;
+  tmp=tmp2->next;
+  if (tmp!=NULL) {
+    tmp->prev=tmp1;
+  }
+  
+  tmp=tmp1->prev;
+  tmp1->prev=tmp2->prev;
+  tmp2->prev=tmp;
+  tmp=tmp1->next;
+  tmp1->next=tmp2->next;
+  tmp2->next=tmp;
+}
+
 
 int main(int argc, char **argv) {
   char pathin[NAME_MAX_LENGTH];
@@ -157,23 +252,24 @@ int main(int argc, char **argv) {
   struct pix_entries all,*iter;
   all.next=NULL;
   all.prev=NULL;
-  printf("Nargs: %i\n",argc);
+  strcpy(all.entry.name,"");
+  printf("Nargs: %i, %s\n",argc,all.entry.name);
   if (argc==1) {
     strcpy(pathin,"/Users/doutriaux1/Desktop");
   }
   else {
     strcpy(pathin,argv[1]);
   }
+  iter=&all;
+  printf("pointer: %p,%p\n",iter,all.next);
   scanDir(pathin,&all,1);
   scanDir(pathin,&all,1);
   iter =&all;
-  i = 1 ;
-  while (iter->next!=NULL) {
-    printf("%i: %s--\n",i,iter->entry.name);
-    i+=1;
-    iter=iter->next;
-  }
-  printf("%i:%s--\n",i,iter->entry.name);
-  printf("Back we think we have: %i entries\n",i);
+  printf("Back we think we have: %i entries\n",entrieslen(iter));
+  iter = entriesget(&all,5);
+  printf("Got: %s \n",iter->entry.name);
+  entriesswap(&all,1,10);
+  printf("------------------------\n");
+  printf("Back we think we have: %i entries\n",entrieslen(iter));
 }
 
