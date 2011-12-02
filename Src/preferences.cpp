@@ -1,7 +1,7 @@
 #include <QtGui>
 #include <Qt>
 #include <preferences.h>
-#include <qtthumbwheel.h>
+//#include <qtthumbwheel.h>
 
 QPrefs::QPrefs() {
   setupUi();
@@ -33,6 +33,12 @@ void QPrefs::setupUi(void) {
   h = new QHBoxLayout();
   l = new QLabel("In");
   h->addWidget(l);
+  QSpacerItem *sp = new QSpacerItem(40,10,QSizePolicy::Expanding,QSizePolicy::Minimum);
+  h->addItem(sp);
+  this->scanSubs = new QCheckBox();
+  h->addWidget(this->scanSubs);
+  l = new QLabel("scan subdirectories?");
+  h->addWidget(l);
   QToolButton *inPathButton = new QToolButton();
   h->addWidget(inPathButton);
   v->addLayout(h);
@@ -55,8 +61,10 @@ void QPrefs::setupUi(void) {
   h = new QHBoxLayout();
   this->useFirstTimeCheckBox = new QCheckBox();
   h->addWidget(this->useFirstTimeCheckBox);
-  l = new QLabel("First Time");
-  h->addWidget(l);
+  this->fdl = new QLabel("First Time");
+  this->fdl->setEnabled(false);
+  h->addWidget(this->fdl);
+  h->addItem(sp);
   this->firstDate = new QDateEdit();
   this->firstDate->setEnabled(false);
   h->addWidget(this->firstDate);
@@ -72,8 +80,10 @@ void QPrefs::setupUi(void) {
   h = new QHBoxLayout();
   this->useLastTimeCheckBox = new QCheckBox();
   h->addWidget(this->useLastTimeCheckBox);
-  l = new QLabel("Last Time");
-  h->addWidget(l);
+  this->ldl = new QLabel("Last Time");
+  this->ldl->setEnabled(false);
+  h->addWidget(this->ldl);
+  h->addItem(sp);
   this->lastDate = new QDateEdit();
   this->lastDate->setEnabled(false);
   h->addWidget(this->lastDate);
@@ -90,12 +100,16 @@ void QPrefs::setupUi(void) {
   h = new QHBoxLayout();
   this->useTimeInterval = new QCheckBox();
   this->useTimeInterval->setCheckState(Qt::Checked);
+  this->useTimeInterval->setEnabled(false); // for now
   h->addWidget(this->useTimeInterval);
   l = new QLabel("Time Interval");
   h->addWidget(l);
   this->timeIntervalLabel = new QLabel("30");
   h->addWidget(this->timeIntervalLabel);
   this->timeIntervalSlider = new QSlider(Qt::Horizontal);
+  this->timeIntervalSlider->setMaximum(100);
+  this->timeIntervalSlider->setMinimum(1);
+  this->timeIntervalSlider->setValue(30);
   h->addWidget(this->timeIntervalSlider);
   this->timeIntervalUnits = new QComboBox();
   this->timeIntervalUnits->addItem("Days");
@@ -110,13 +124,20 @@ void QPrefs::setupUi(void) {
   /* Distance */
   h = new QHBoxLayout();
   this->useDistanceCluster = new QCheckBox();
-  this->useDistanceCluster->setCheckState(Qt::Checked);
+  this->useDistanceCluster->setCheckState(Qt::Unchecked);
+  this->useDistanceCluster->setEnabled(false);
   h->addWidget(this->useDistanceCluster);
   l = new QLabel("Distance Cluster");
+  l->setEnabled(false);
   h->addWidget(l);
-  this->distClusterLabel = new QLabel("0");
+  this->distClusterLabel = new QLabel("1");
+  this->distClusterLabel->setEnabled(false);
   h->addWidget(this->distClusterLabel);
   this->distClusterSlider = new QSlider(Qt::Horizontal);
+  this->distClusterSlider->setMaximum(100);
+  this->distClusterSlider->setMinimum(1);
+  this->distClusterSlider->setValue(1);
+  this->distClusterSlider->setEnabled(false);
   h->addWidget(this->distClusterSlider);
   this->distClusterUnits = new QComboBox();
   this->distClusterUnits->addItem("miles");
@@ -124,12 +145,14 @@ void QPrefs::setupUi(void) {
   this->distClusterUnits->addItem("feet");
   this->distClusterUnits->addItem("m");
   this->distClusterUnits->setCurrentIndex(0);
+  this->distClusterUnits->setEnabled(false);
   h->addWidget(this->distClusterUnits);
 
 
-  QtThumbWheel *wheel = new QtThumbWheel();
+  /*QtThumbWheel *wheel = new QtThumbWheel();
   wheel->setRange(-100, 100);
   h->addWidget(wheel);
+  /*
   /* Add Distamce Cluster to Sep Layout */
   sepLayout->addLayout(h);
 
@@ -144,11 +167,24 @@ void QPrefs::setupUi(void) {
 
   connect(outPathButton,SIGNAL(clicked()),this,SLOT(selectOutDir()));
   connect(inPathButton,SIGNAL(clicked()),this,SLOT(addInDir()));
-  connect(this->useFirstTimeCheckBox,SIGNAL(stateChanged(int)),this,SLOT(checkUseFirstTime()));
-  connect(this->useLastTimeCheckBox,SIGNAL(stateChanged(int)),this,SLOT(checkUseLasTime()));
-
+  connect(this->useFirstTimeCheckBox,SIGNAL(stateChanged(int)),this,SLOT(checkUseFirstTime(int)));
+  connect(this->useLastTimeCheckBox,SIGNAL(stateChanged(int)),this,SLOT(checkUseLastTime(int)));
+  connect(this->useTimeInterval,SIGNAL(stateChanged(int)),this,SLOT(useTimeIntervalChecked(int)));
+  connect(this->useDistanceCluster,SIGNAL(stateChanged(int)),this,SLOT(useDistClusterChecked(int)));
+  connect(this->timeIntervalSlider,SIGNAL(valueChanged(int)),this,SLOT(timeIntervalValueChanged(int)));
+  connect(this->distClusterSlider,SIGNAL(valueChanged(int)),this,SLOT(distClusterValueChanged(int)));
 }
 
+void QPrefs::timeIntervalValueChanged(int v) {
+  char value[4];
+  sprintf(value,"%d",v);
+  this->timeIntervalLabel->setText(value);
+}
+void QPrefs::distClusterValueChanged(int v) {
+  char value[4];
+  sprintf(value,"%d",v);
+  this->distClusterLabel->setText(value);
+}
 void QPrefs::selectOutDir() {
   QFileDialog *dirDialog = new QFileDialog();
   QString outDir = dirDialog->getExistingDirectory(this,"Choose Output Root Directory");
@@ -170,8 +206,41 @@ void QPrefs::addInDir() {
   if (unique) this->inPathList->addItem(inDir);
 }
 void QPrefs::checkUseFirstTime(int state) {
+  if (state == Qt::Checked ) {
+    this->firstDate->setEnabled(true);
+    this->firstCalButton->setEnabled(true);
+    this->firstTime->setEnabled(true);
+    this->fdl->setEnabled(true);
+  }
+  else {
+    this->firstDate->setEnabled(false);
+    this->firstCalButton->setEnabled(false);
+    this->firstTime->setEnabled(false);
+    this->fdl->setEnabled(false);
+  }    
 }
 void QPrefs::checkUseLastTime(int state) {
+  if (state == Qt::Checked ) {
+    this->lastDate->setEnabled(true);
+    this->lastCalButton->setEnabled(true);
+    this->lastTime->setEnabled(true);
+    this->ldl->setEnabled(true);
+  }
+  else {
+    this->lastDate->setEnabled(false);
+    this->lastCalButton->setEnabled(false);
+    this->lastTime->setEnabled(false);
+    this->ldl->setEnabled(false);
+  }   
+}
+void QPrefs::useTimeIntervalChecked(int state) {
+  // For now just turn it back on
+  this->useTimeInterval->setCheckState(Qt::Checked);
+}
+
+void QPrefs::useDistClusterChecked(int state) {
+  // For now just turn it back on
+  this->useDistanceCluster->setCheckState(Qt::Unchecked);
 }
 
 

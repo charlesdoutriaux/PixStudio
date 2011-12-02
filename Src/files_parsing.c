@@ -30,15 +30,23 @@ int isOkFromExt(char *name) {
 
 time_t readTime(ExifEntry *entry) {
   char asciitime[30];
-  struct tm tm;
+  struct tm *tm;
   time_t tt;
+  int yr,mon,day,hr,min,s;
+  time(&tt);
+  tm = localtime(&tt);
   strcpy(asciitime,entry->data);
-  printf("DATE: %s\n",asciitime);
-  sscanf(asciitime,"%4i:%2i:%2i %2i:%2i:%2i",&tm.tm_year,&tm.tm_mon,&tm.tm_mday,&tm.tm_hour,&tm.tm_min,&tm.tm_sec);
-  tm.tm_year-=1900;
-  tm.tm_mon-=1;
-  tt = mktime(&tm);
-  printf("DATE2: %s\n",asctime(&tm));
+  //printf("DATE: %s\n",asciitime);
+  sscanf(asciitime,"%4d:%2d:%2d %2d:%2d:%2d",&yr,&mon,&day,&hr,&min,&s);
+  //printf("read: %i, %i, %i, %i, %i, %i,\n",yr,mon,day,hr,min,s);
+  tm->tm_year=yr-1900;
+  tm->tm_mon=mon-1;
+  tm->tm_mday=day;
+  tm->tm_hour=hr;
+  tm->tm_min=min;
+  tm->tm_sec=s;
+  tt = mktime(tm);
+  //printf("DATE2: %s\n",asctime(tm));
   return tt;
 }
 float readAngle(ExifEntry *entry){
@@ -57,7 +65,8 @@ float readAngle(ExifEntry *entry){
  r = exif_get_rational (entry->data , o);
  return (float)r.numerator/(float)r.denominator + sec/3600.;
 }
-void scanDir(char *path, struct pix_entries *entries,unsigned int sub) {
+
+void _scanDir(char *path, struct pix_entries *entries,unsigned int sub,unsigned int maxsub) {
   DIR *diri,*dirtmp;
  struct dirent *dire;
  FILE *afile=NULL;
@@ -96,7 +105,7 @@ void scanDir(char *path, struct pix_entries *entries,unsigned int sub) {
      if ((strcmp(&fnm[strlen(fnm)-2],"/.")==0)||(strcmp(&fnm[strlen(fnm)-3],"/..")==0)) {
        continue;
      };
-     if (sub>=1) scanDir(fnm,entries,sub+1);
+     if ((sub<maxsub)||(maxsub<0)) _scanDir(fnm,entries,sub+1,maxsub);
      continue;
    }
    // Ok now trying to load the exif info
@@ -113,7 +122,7 @@ void scanDir(char *path, struct pix_entries *entries,unsigned int sub) {
        pixEntry->next= NULL;
      }
      //printf("FILE: %s\n",dire->d_name);
-     strcpy(pixEntry->entry.name,dire->d_name);
+     strcpy(pixEntry->entry.name,fnm);
      pixEntry->entry.hasExif=0;
      pixEntry->entry.lat=1.e20;
      pixEntry->entry.lon=1.e20;
@@ -159,6 +168,10 @@ void scanDir(char *path, struct pix_entries *entries,unsigned int sub) {
  closedir(diri);
 //printf("Discovered: %i valid files\n",nentries);
 }
+void scanDir(char *path, struct pix_entries *entries,unsigned int maxsub) {
+  return _scanDir(path,entries,0,maxsub);
+}
+
 int entrieslen(struct pix_entries *entries) {
   int i;
 
@@ -309,9 +322,7 @@ int main(int argc, char **argv) {
   }
   iter=&all;
   printf("pointer: %p,%p\n",iter,all.next);
-  scanDir(pathin,&all,1);
-  //scanDir(pathin,&all,1);
-  //scanDir(pathin,&all,1);
+  scanDir(pathin,&all,3);
   iter =&all;
   printf("Back we think we have: %i entries\n",entrieslen(iter));
   entriesprint(&all);
@@ -327,3 +338,4 @@ int main(int argc, char **argv) {
   entriesprint(&all);
 }
 
+;

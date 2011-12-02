@@ -15,12 +15,16 @@ class QPrefs : public QFrame
   void addInDir();
   void checkUseFirstTime(int state);
   void checkUseLastTime(int state);
+  void timeIntervalValueChanged(int value);
+  void distClusterValueChanged(int value);
+  void useTimeIntervalChecked(int state);
+  void useDistClusterChecked(int state);
  private:
   void setupUi(void);
-  QLabel *distClusterLabel,*timeIntervalLabel;
+  QLabel *distClusterLabel,*timeIntervalLabel,*fdl,*ldl;
   QLineEdit *outLineEdit;
   QPathListWidget *inPathList;
-  QCheckBox *useFirstTimeCheckBox,*useLastTimeCheckBox,*useTimeInterval,*useDistanceCluster;
+  QCheckBox *scanSubs,*useFirstTimeCheckBox,*useLastTimeCheckBox,*useTimeInterval,*useDistanceCluster;
   QDateEdit *firstDate,*lastDate;
   QTimeEdit *firstTime,*lastTime;
   QSlider *timeIntervalSlider,*distClusterSlider;
