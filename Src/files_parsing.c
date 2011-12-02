@@ -33,7 +33,7 @@ time_t readTime(ExifEntry *entry) {
   struct tm tm;
   time_t tt;
   strcpy(asciitime,entry->data);
-  //printf("DATE: %s\n",asciitime);
+  printf("DATE: %s\n",asciitime);
   sscanf(asciitime,"%4i:%2i:%2i %2i:%2i:%2i",&tm.tm_year,&tm.tm_mon,&tm.tm_mday,&tm.tm_hour,&tm.tm_min,&tm.tm_sec);
   tm.tm_year-=1900;
   tm.tm_mon-=1;
@@ -310,8 +310,8 @@ int main(int argc, char **argv) {
   iter=&all;
   printf("pointer: %p,%p\n",iter,all.next);
   scanDir(pathin,&all,1);
-  scanDir(pathin,&all,1);
-  scanDir(pathin,&all,1);
+  //scanDir(pathin,&all,1);
+  //scanDir(pathin,&all,1);
   iter =&all;
   printf("Back we think we have: %i entries\n",entrieslen(iter));
   entriesprint(&all);
