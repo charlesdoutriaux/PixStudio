@@ -172,7 +172,7 @@ void scanDir(char *path, struct pix_entries *entries,unsigned int maxsub) {
   return _scanDir(path,entries,0,maxsub);
 }
 
-int entrieslen(struct pix_entries *entries) {
+int entriesLen(struct pix_entries *entries) {
   int i;
 
   if (entries==NULL) return 0;
@@ -195,7 +195,7 @@ int entrieslen(struct pix_entries *entries) {
   //printf("%i: %s--\n",i,entries->entry.name);
   return i+1;
 }
-void entriesprint(struct pix_entries *entries) {
+void entriesPrint(struct pix_entries *entries) {
   int i;
   time_t now;
 
@@ -221,7 +221,7 @@ void entriesprint(struct pix_entries *entries) {
   return;
 }
 
-struct pix_entries *entriesget(struct pix_entries *entries, int index) {
+struct pix_entries *entriesGet(struct pix_entries *entries, int index) {
   int i;
   if (entries==NULL) return NULL;
 
@@ -249,11 +249,11 @@ struct pix_entries *entriesget(struct pix_entries *entries, int index) {
 
 }
 
-void entriesswap(struct pix_entries *entries,int i1,int i2) {
+void entriesSwap(struct pix_entries *entries,int i1,int i2) {
   struct pix_entries *e1,*e2;
   int i3;
   struct pix_entry tmp;
-  i3 = entrieslen(entries);
+  i3 = entriesLen(entries);
   if (i2>=i3) {
     return;
   }
@@ -263,53 +263,104 @@ void entriesswap(struct pix_entries *entries,int i1,int i2) {
   if (i2==i1) return;
 
   /* First gets thepointers */
-  e1 = entriesget(entries,i1);
-  e2 = entriesget(entries,i2);
+  e1 = entriesGet(entries,i1);
+  e2 = entriesGet(entries,i2);
   tmp = (struct pix_entry) e1->entry;
   e1->entry = e2->entry;
   e2->entry=(struct pix_entry) tmp;
 }
 
 
-int entriespartition(struct pix_entries *entries, int left, int right, int ipivot) {
+int entriesPartition(struct pix_entries *entries, int left, int right, int ipivot) {
   struct pix_entries *tmp;
   struct pix_entry pivot;
   int i,istore;
   double diff;
-  tmp = entriesget(entries,ipivot);
+  tmp = entriesGet(entries,ipivot);
   pivot = tmp->entry;
-  entriesswap(entries,ipivot,right);
+  entriesSwap(entries,ipivot,right);
   istore=left;
   for (i=left;i<right;i++) {
-    tmp = entriesget(entries,i);
+    tmp = entriesGet(entries,i);
     // For now time comparison only
     diff = difftime(tmp->entry.time,pivot.time);
     if (diff<0.) {
-      entriesswap(entries,i,istore);
+      entriesSwap(entries,i,istore);
       istore+=1;
     }
   }
-  entriesswap(entries,istore,right);
+  entriesSwap(entries,istore,right);
   return istore;
 }
 
-void entriesquicksort(struct pix_entries *entries,int left, int right) {
+void entriesQuicksort(struct pix_entries *entries,int left, int right) {
   int i,ipivot,inewpivot;
   struct pix_entries *tmp;
   if (left<right) {
     ipivot = left + (right-left)/2;
     //ipivot=left+1;
-    inewpivot = entriespartition(entries,left,right,ipivot);
-    entriesquicksort(entries,left,inewpivot-1);
-    entriesquicksort(entries,inewpivot+1,right);
+    inewpivot = entriesPartition(entries,left,right,ipivot);
+    entriesQuicksort(entries,left,inewpivot-1);
+    entriesQuicksort(entries,inewpivot+1,right);
   }
 }
 
+struct pix_entries ** entriesSplitPerTime(struct pix_entries *entries, int delta) {
+  int i;
+  unsigned int new=1,cont=1;
+  struct pix_entries *current,**out;
+
+  // Sadly it seems we need to first loop once to figure out the number of packs and then malloc this, seems inefficient
+  i=1;
+  current=entries;
+  while (current->next!=NULL) {
+    if (difftime(current->next->entry.time,current->entry.time)>delta) {
+      i+=1;
+    }
+    current=current->next;
+  }
+  out = malloc(sizeof(struct pix_entries *)*(i+1));
+  printf("preannalyss thinks there is %i packs\n",i);
+  i=-1;
+  while (cont) {
+    if (new) {
+      i+=1;
+      printf("mallocing for i: %i,%p\n",i,out[i]);
+      out[i] = malloc(sizeof(struct pix_entries));
+      printf("malloced with adess: %p\n",out[i]);
+      //out[i]=current;
+      current=out[i];
+    }
+    else {
+      current->next=malloc(sizeof(struct pix_entries));
+      current->next->prev=current;
+      current=current->next;
+    }
+    current->entry=entries->entry;
+    printf("looking at: %s (next:%p)\n",entries->entry.name,entries->next);
+
+    if (entries->next==NULL) {
+      cont=0;
+    }
+    else {
+      if (difftime(entries->next->entry.time,entries->entry.time)>delta) {
+	new=1;
+      }
+      else {
+	new=0;
+      }
+    }
+    entries=entries->next;
+  }
+  i+=1;
+  out[i]=NULL;
+  return out;
+}
 
 int main(int argc, char **argv) {
   char pathin[NAME_MAX_LENGTH];
-  int i;
-  struct pix_entries all,*iter;
+  int i,j;
+  struct pix_entries all,*iter,**split;
   all.next=NULL;
   all.prev=NULL;
   strcpy(all.entry.name,"");
@@ -324,8 +375,8 @@ int main(int argc, char **argv) {
   printf("pointer: %p,%p\n",iter,all.next);
   scanDir(pathin,&all,3);
   iter =&all;
-  printf("Back we think we have: %i entries\n",entrieslen(iter));
-  entriesprint(&all);
+  printf("Back we think we have: %i entries\n",entriesLen(iter));
+  entriesPrint(&all);
   //iter = entriesget(&all,5);
   //printf("Got: %s \n",iter->entry.name);
   //entriesswap(&all,1,2);
@@ -333,9 +384,20 @@ int main(int argc, char **argv) {
   //entriesprint(&all);
   printf("SORTING\n");
   //entriespartition(&all,0,13,6);
-  entriesquicksort(&all,0,entrieslen(&all)-1);
+  entriesQuicksort(&all,0,entriesLen(&all)-1);
   printf("-------SORTED---------\n");
-  entriesprint(&all);
-}
-
-;
+  entriesPrint(&all);
+  printf("------ Splitting ------\n");
+  split = entriesSplitPerTime(&all,3600);
+  printf("----splitted: %i,%p,%p,%p\n",i,split,&split,&split[0]);
+  //i=0;
+  printf("Counting splits: %p, %p\n",split,&split);
+  iter = split[0];
+  i=0;
+  while(iter!=NULL) {
+    printf("Pack: %i, n%s\n",i,iter->entry.name);
+    //printf("len: %i\n",entriesLen(&split[i]));
+    i+=1;
+    iter=split[i];
+  }
+};
