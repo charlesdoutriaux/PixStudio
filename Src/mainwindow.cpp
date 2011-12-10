@@ -1,20 +1,19 @@
+#include <Qt>
+#include <QtGui>
 #include <mainwindow.h>
 #include <preferences.h>
-#include <QtGui>
-#include <Qt>
 
 MainWindow::MainWindow() {
   setupUi();
 }
 
 void MainWindow::setupUi() {
-  QSplitter *centralWidget = new QSplitter(Qt::Horizontal);
-  QPrefs *prefs = new QPrefs();
-  centralWidget->addWidget(prefs);
+  this->prefs = new QPrefs();
+  addDockWidget(Qt::LeftDockWidgetArea,this->prefs);
+  //centralWidget->addWidget(prefs);
   //printf("Ok dist label is: %s\n",(const char *) prefs->distClusterLabel->text().toAscii());
-  QTabWidget *tabs = new QTabWidget();
-  centralWidget->addWidget(tabs);
-  setCentralWidget(centralWidget);
+  this->tabs = new QTabWidget;
+  this->setCentralWidget(this->tabs);
   setWindowTitle("PixStudio");
 }
 

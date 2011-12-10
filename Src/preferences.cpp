@@ -161,8 +161,9 @@ void QPrefs::setupUi(void) {
   sepGroupBox->setLayout(sepLayout);
   vLayout->addWidget(sepGroupBox);
   /* Sets Prefs Widget Layout */
-  setLayout(vLayout);
-
+  QFrame *f = new QFrame();
+  f->setLayout(vLayout);
+  setWidget(f);
   /* Ok nowconnect signals */
 
   connect(outPathButton,SIGNAL(clicked()),this,SLOT(selectOutDir()));

@@ -1,11 +1,11 @@
-#include <QFrame>
+#include <QDockWidget>
 #include <QtGui>
 #include <QPathListWidget.h>
 
 #ifndef QPREFS_H
 #define QPREFS_H
 
-class QPrefs : public QFrame
+class QPrefs : public QDockWidget
 {
  Q_OBJECT
    public :
