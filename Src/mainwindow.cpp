@@ -15,5 +15,9 @@ void MainWindow::setupUi() {
   this->tabs = new QTabWidget;
   this->setCentralWidget(this->tabs);
   setWindowTitle("PixStudio");
+  this->tb = new QToolBar();
+  addToolBar(this->tb);
+  QMenuBar *menu = new QMenuBar();
+  menu->addMenu(tr("&View"));
 }
 

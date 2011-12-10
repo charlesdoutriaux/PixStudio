@@ -14,6 +14,7 @@ class MainWindow : public QMainWindow
  private:
   QTabWidget *tabs;
   QPrefs *prefs;
+  QToolBar *tb;
   /*  slots: */
   /* signals: */
 };
