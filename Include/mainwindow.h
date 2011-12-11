@@ -8,14 +8,17 @@
 class MainWindow : public QMainWindow
 {
   Q_OBJECT
-      public: 
+    public: 
   MainWindow();
-  void setupUi();
  private:
+  void setupUi();
+  void connectSignals();
   QTabWidget *tabs;
   QPrefs *prefs;
   QToolBar *tb;
-  /*  slots: */
+  struct pix_entries *pix;
+  public slots: 
+  void refreshProjects();
   /* signals: */
 };
 

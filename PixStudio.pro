@@ -4,8 +4,13 @@
 #
 #-------------------------------------------------
 
+
+macx {
 QMAKE_CXXFLAGS += -arch x86_64
 QMAKE_CFLAGS += -arch x86_64
+}
+
+RESOURCES = PixStudio.qrc
 
 QMAKE_CXXFLAGS += -IInclude
 QMAKE_CFLAGS += -IInclude
@@ -18,16 +23,33 @@ SOURCES += Src/main.cpp \
 	   Src/mainwindow.cpp \
            Src/preferences.cpp \
            Src/QPathListWidget.cpp \
-           Src/qtthumbwheel.cpp 
+           Src/files_parsing.cpp
            
 
 HEADERS += \
     Include/mainwindow.h \
     Include/preferences.h \
     Include/QPathListWidget.h \
-    Include/qtthumbwheel.h
+    Include/pixstudio.h
+
+macx {
+ LIBS += \
+    -L/usr/local/lib -lexif
+}
 
 
-
+ message(Qt version: $$[QT_VERSION])
+ message(Qt is installed in $$[QT_INSTALL_PREFIX])
+ message(Qt resources can be found in the following locations:)
+ message(Documentation: $$[QT_INSTALL_DOCS])
+ message(Header files: $$[QT_INSTALL_HEADERS])
+ message(Libraries: $$[QT_INSTALL_LIBS])
+ message(Binary files (executables): $$[QT_INSTALL_BINS])
+ message(Plugins: $$[QT_INSTALL_PLUGINS])
+ message(Data files: $$[QT_INSTALL_DATA])
+ message(Translation files: $$[QT_INSTALL_TRANSLATIONS])
+ message(Settings: $$[QT_INSTALL_SETTINGS])
+ message(Examples: $$[QT_INSTALL_EXAMPLES])
+ message(Demonstrations: $$[QT_INSTALL_DEMOS])
 
 

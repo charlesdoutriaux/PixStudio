@@ -3,7 +3,8 @@
 #include <preferences.h>
 //#include <qtthumbwheel.h>
 
-QPrefs::QPrefs() {
+QPrefs::QPrefs(const QString & title, QWidget * parent = 0, Qt::WindowFlags flags = 0) {
+  setParent(parent);
   setupUi();
 };
 
@@ -174,6 +175,12 @@ void QPrefs::setupUi(void) {
   connect(this->useDistanceCluster,SIGNAL(stateChanged(int)),this,SLOT(useDistClusterChecked(int)));
   connect(this->timeIntervalSlider,SIGNAL(valueChanged(int)),this,SLOT(timeIntervalValueChanged(int)));
   connect(this->distClusterSlider,SIGNAL(valueChanged(int)),this,SLOT(distClusterValueChanged(int)));
+  connect(this->scanSubs,SIGNAL(stateChanged(int)),this,SLOT(checkedSubs(int)));
+}
+
+void QPrefs::checkedSubs(int state) {
+  this->needScan = true;
+  printf("need scan!\n");
 }
 
 void QPrefs::timeIntervalValueChanged(int v) {
@@ -204,8 +211,12 @@ void QPrefs::addInDir() {
       unique = false;
     }
   }
-  if (unique) this->inPathList->addItem(inDir);
+  if (unique) {
+    this->inPathList->addItem(inDir);
+    this->needScan = true;
+  }
 }
+
 void QPrefs::checkUseFirstTime(int state) {
   if (state == Qt::Checked ) {
     this->firstDate->setEnabled(true);
