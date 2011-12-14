@@ -3,8 +3,8 @@
 #include <preferences.h>
 //#include <qtthumbwheel.h>
 
-QPrefs::QPrefs(const QString & title, QWidget * parent = 0, Qt::WindowFlags flags = 0) {
-  setParent(parent);
+QPrefs::QPrefs(const QString & title, QWidget * parent = 0, Qt::WindowFlags flags = 0) 
+  :QDockWidget(title,parent,flags) {
   setupUi();
 };
 
@@ -24,6 +24,7 @@ void QPrefs::setupUi(void) {
   QLabel *l = new QLabel("Out");
   h->addWidget(l);
   this->outLineEdit = new QLineEdit();
+  this->outLineEdit->setText(tr("/Users/doutriaux1/Desktop"));
   h->addWidget(this->outLineEdit);
   QToolButton *outPathButton = new QToolButton();
   h->addWidget(outPathButton);
@@ -44,6 +45,7 @@ void QPrefs::setupUi(void) {
   h->addWidget(inPathButton);
   v->addLayout(h);
   this->inPathList = new QPathListWidget();
+  this->inPathList->addItem(tr("/Users/doutriaux1/Desktop"));
   v->addWidget(this->inPathList);
   pathsLayout->addLayout(v);
 

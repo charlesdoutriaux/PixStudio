@@ -23,14 +23,18 @@ SOURCES += Src/main.cpp \
 	   Src/mainwindow.cpp \
            Src/preferences.cpp \
            Src/QPathListWidget.cpp \
-           Src/files_parsing.cpp
+           Src/files_parsing.cpp \
+           Src/QGallery.cpp \
+           Src/QGalleryTab.cpp 
            
 
 HEADERS += \
     Include/mainwindow.h \
     Include/preferences.h \
     Include/QPathListWidget.h \
-    Include/pixstudio.h
+    Include/pixstudio.h \
+    Include/QGallery.h \
+    Include/QGalleryTab.h
 
 macx {
  LIBS += \

@@ -3,8 +3,10 @@
 #include <mainwindow.h>
 #include <preferences.h>
 #include <pixstudio.h>
+#include <QGalleryTab.h>
 
-MainWindow::MainWindow() {
+MainWindow::MainWindow() 
+  :QMainWindow() {
   setupUi();
   connectSignals();
 }
@@ -14,7 +16,7 @@ void MainWindow::setupUi() {
   addDockWidget(Qt::LeftDockWidgetArea,this->prefs);
   //centralWidget->addWidget(prefs);
   //printf("Ok dist label is: %s\n",(const char *) prefs->distClusterLabel->text().toAscii());
-  this->tabs = new QTabWidget;
+  this->tabs = new QTabWidget();
   this->setCentralWidget(this->tabs);
   setWindowTitle("PixStudio");
   this->tb = new QToolBar();
@@ -94,9 +96,9 @@ void MainWindow::refreshProjects() {
   iter=split[0];
   while (iter!=NULL) {
     sprintf(path,"Project: %i",i);
-    this->tabs->addTab(new QLabel("Here we go!"),tr(path));
+    this->tabs->addTab(new QGalleryTab(this,iter),tr(path));
     printf("Pack: %i, n%s\n",i,iter->entry.name);
-    entriesFree(iter);
+    //entriesFree(iter);
     //printf("len: %i\n",entriesLen(&split[i]));
     i+=1;
     iter=split[i];
