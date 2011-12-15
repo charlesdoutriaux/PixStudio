@@ -12,7 +12,7 @@ class QGallery : public QScrollArea
   struct pix_entries *pix;
   void resizeEvent(QResizeEvent *event);
   void reArrange();
-
+  void cleanUp();
  private:
   QList<QWidget*> childs;
   QGridLayout *grid;
