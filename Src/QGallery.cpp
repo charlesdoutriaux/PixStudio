@@ -68,7 +68,7 @@ void QGallery::setupIcons() {
 void QGallery::cleanUp() {
 
   int i,j,n,w,W=100;
-  QSize s = this->f->size();
+  QSize s = this->parentWidget()->size();
   fprintf(stderr,"REARRANGE: %i elts into a %ix%i frame\n",this->childs.size(),s.width(),s.height());
   for (i=0;i<this->grid->count();i++) {
     QLayoutItem *it = this->grid->itemAt(i);
@@ -82,7 +82,7 @@ void QGallery::cleanUp() {
 void QGallery::reArrange() {
 
   int i,j,n,w,W=100;
-  QSize s = this->f->size();
+  QSize s = this->parentWidget()->size();
   
     n=0;
     i=0;
