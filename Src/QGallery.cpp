@@ -33,12 +33,13 @@ void QGallery::setupIcons() {
   QIcon icon;
   int i;
   int N = entriesLen(this->pix);
-  int W=100;
+  int W=((QGalleryTab *)this->parentWidget())->iconsSizeSlider->maximum();
+  char tip[256];
   for (i=0;i<N;i++) {
     	b = new QCheckBox();
 	pe = entriesGet(this->pix,i);
 	QImageReader reader; 
-	
+	sprintf(tip,"%s\n%sLon:%.2f\nLat:%.2f",pe->entry.name,asctime(localtime(&pe->entry.time)),pe->entry.lon,pe->entry.lat);
 	// Set image name
 	reader.setFileName(pe->entry.name);
 	
@@ -59,15 +60,16 @@ void QGallery::setupIcons() {
 	
 	icon= QIcon(pixmap);
 	b->setIcon(icon);
-	b->setIconSize( QSize(W,W));
+	//b->setIconSize( QSize(W,W));
 	b->setChecked(Qt::Checked);
+	b->setToolTip(tip);
 	this->childs.append(b);
   }
 }
 
 void QGallery::cleanUp() {
 
-  int i,j,n,w,W=100;
+  int i,j,n,w;
   QSize s = this->parentWidget()->size();
   fprintf(stderr,"REARRANGE: %i elts into a %ix%i frame\n",this->childs.size(),s.width(),s.height());
   for (i=0;i<this->grid->count();i++) {
@@ -81,7 +83,9 @@ void QGallery::cleanUp() {
   
 void QGallery::reArrange() {
 
-  int i,j,n,w,W=100;
+  int i,j,n,w;  
+  int W=((QGalleryTab *)this->parentWidget())->iconsSizeSlider->value();
+ 
   QSize s = this->parentWidget()->size();
   
     n=0;
@@ -92,6 +96,7 @@ void QGallery::reArrange() {
       fprintf(stderr,"i: %i, w\n",i);
       while ((n<this->childs.size()) && ((w<s.width()-W) || (w==0))) {
 	this->grid->addWidget(childs[n],i,j);
+	((QCheckBox *)(childs)[n])->setIconSize(QSize(W,W));
 	childs[n]->show();
 	fprintf(stderr,"Adding a widget at: %i, %i\n",i,j);
 	w+=W;
