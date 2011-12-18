@@ -2,7 +2,7 @@
 #define QGALLERY_TAB_H
 #include <QtGui>
 #include <QGallery.h>
-#include <pixstudio.h>
+#include <pix_entries.h>
 
 class QGalleryTab : public QWidget
 {

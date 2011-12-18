@@ -1,6 +1,6 @@
 #include <QtGui>
 #include <QGalleryTab.h>
-#include <pixstudio.h>
+#include <pix_entries.h>
 extern struct pix_entries *entriesGet(struct pix_entries *e,int i);
 QGallery::QGallery(QWidget * parent,  struct pix_entries *pix)
 

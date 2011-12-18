@@ -24,22 +24,23 @@ SOURCES += Src/main.cpp \
            Src/preferences.cpp \
            Src/QPathListWidget.cpp \
            Src/files_parsing.cpp \
+           Src/pix_entries.cpp \
            Src/QGallery.cpp \
-           Src/QGalleryTab.cpp 
+           Src/QGalleryTab.cpp \
+           Src/QExifImageHeader.cpp
            
 
 HEADERS += \
     Include/mainwindow.h \
     Include/preferences.h \
     Include/QPathListWidget.h \
-    Include/pixstudio.h \
+    Include/files_parsing.h \
+    Include/pix_entries.h \
     Include/QGallery.h \
-    Include/QGalleryTab.h
+    Include/QGalleryTab.h \
+    Include/QExifImageHeader.h
 
-macx {
- LIBS += \
-    -L/usr/local/lib -lexif
-}
+
 
 
  message(Qt version: $$[QT_VERSION])

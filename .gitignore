@@ -1,2 +1,7 @@
+Makefile
+*crap*
+qrc_*cpp
+.DS_Store
+moc_*
 *.o
 *~

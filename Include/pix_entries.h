@@ -1,8 +1,8 @@
 #include <time.h>
 //#include <Qt>
 //#include <QtGui>
-#ifndef PIXSTUDIO_H
-#define PIXSTUDIO_H
+#ifndef PIX_ENTRIES_H
+#define PIX_ENTRIES_H
 #define NAME_MAX_LENGTH 2048
 struct pix_entry {
   //char original_md5[50];
@@ -18,7 +18,6 @@ struct pix_entries {
   struct pix_entry entry;
   struct pix_entries *next;
 };
-extern void scanDir(char *path, struct pix_entries *entries,unsigned int maxsub);
 extern int entriesLen(struct pix_entries *entries);
 extern void entriesPrint(struct pix_entries *entries);
 extern void entriesQuicksort(struct pix_entries *entries,int left, int right);

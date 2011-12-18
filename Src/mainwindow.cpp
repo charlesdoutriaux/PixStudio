@@ -2,7 +2,7 @@
 #include <QtGui>
 #include <mainwindow.h>
 #include <preferences.h>
-#include <pixstudio.h>
+#include <files_parsing.h>
 #include <QGalleryTab.h>
 
 MainWindow::MainWindow() 
