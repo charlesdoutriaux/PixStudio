@@ -32,6 +32,15 @@ class QPrefs : public QDockWidget
   void checkedSubs(int state);
  private:
   void setupUi(void);
+  QHBoxLayout *h,*h1,*h2,*h3,*h4,*h5;
+  QVBoxLayout *vLayout,*v,*v1,*sepLayout,*pathsLayout;
+  QLabel *prefsLabel,*l,*l1,*l2,*l3,*l4;
+  QGroupBox *pathsGroupBox,*sepGroupBox;
+  QToolButton *outPathButton,*inPathButton;
+  QFrame *f;
+  QFileDialog *dirDialog;
+  QSpacerItem *sp,*sp1,*sp2;
+
 };
 
 

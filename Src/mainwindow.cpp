@@ -77,6 +77,12 @@ void MainWindow::refreshProjects() {
       }
     }
   }
+  if (this->pix == NULL) {
+     QMessageBox mBox;
+    mBox.setText("No Files Found!");
+    mBox.exec();
+    return;
+  };
   // Ok here insert code for cropping
   //crop(this->pix);
   //Now we need to break it by time

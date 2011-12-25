@@ -9,139 +9,142 @@ QPrefs::QPrefs(const QString & title, QWidget * parent = 0, Qt::WindowFlags flag
 };
 
 void QPrefs::setupUi(void) {
-  QVBoxLayout *vLayout = new QVBoxLayout();
-  QLabel *prefsLabel = new QLabel("Preferences");
-  vLayout->addWidget(prefsLabel);
+  this->dirDialog = new QFileDialog();
+  this->vLayout = new QVBoxLayout();
+  this->prefsLabel = new QLabel("Preferences");
+  this->vLayout->addWidget(prefsLabel);
 
   /* Paths Related Area */
-  QGroupBox *pathsGroupBox = new QGroupBox();
-  pathsGroupBox->setTitle("Paths");
+  this->pathsGroupBox = new QGroupBox();
+  this->pathsGroupBox->setTitle("Paths");
   /* GroupBox Layout */
-  QVBoxLayout *pathsLayout = new QVBoxLayout();
+  this->pathsLayout = new QVBoxLayout();
 
   /* Output Path */
-  QHBoxLayout *h = new QHBoxLayout();
-  QLabel *l = new QLabel("Out");
-  h->addWidget(l);
+  this->l = new QLabel("Out");
+  this->h = new QHBoxLayout();
+  this->h->addWidget(this->l);
   this->outLineEdit = new QLineEdit();
   this->outLineEdit->setText(tr("/Users/doutriaux1/Desktop"));
-  h->addWidget(this->outLineEdit);
-  QToolButton *outPathButton = new QToolButton();
-  h->addWidget(outPathButton);
-  pathsLayout->addLayout(h);
+  this->h->addWidget(this->outLineEdit);
+  this->outPathButton = new QToolButton();
+  this->h->addWidget(this->outPathButton);
+  this->pathsLayout->addLayout(this->h);
 
   /* Input Paths */
-  QVBoxLayout *v = new QVBoxLayout();
-  h = new QHBoxLayout();
-  l = new QLabel("In");
-  h->addWidget(l);
-  QSpacerItem *sp = new QSpacerItem(40,10,QSizePolicy::Expanding,QSizePolicy::Minimum);
-  h->addItem(sp);
+  this->v1 = new QVBoxLayout();
+  this->h1= new QHBoxLayout();
+  this->l1 = new QLabel("In");
+  this->h1->addWidget(this->l1);
+  this->sp = new QSpacerItem(40,10,QSizePolicy::Expanding,QSizePolicy::Minimum);
+  this->h1->addItem(this->sp);
   this->scanSubs = new QCheckBox();
-  h->addWidget(this->scanSubs);
-  l = new QLabel("scan subdirectories?");
-  h->addWidget(l);
-  QToolButton *inPathButton = new QToolButton();
-  h->addWidget(inPathButton);
-  v->addLayout(h);
+  this->h1->addWidget(this->scanSubs);
+  this->l2 = new QLabel("scan subdirectories?");
+  this->h1->addWidget(this->l2);
+  this->inPathButton = new QToolButton();
+  this->h1->addWidget(this->inPathButton);
+  this->v1->addLayout(this->h1);
   this->inPathList = new QPathListWidget();
   this->inPathList->addItem(tr("/Users/doutriaux1/Desktop"));
-  v->addWidget(this->inPathList);
-  pathsLayout->addLayout(v);
+  this->v1->addWidget(this->inPathList);
+  this->pathsLayout->addLayout(this->v1);
 
   /* Setslayout for Paths GroupBox */
-  pathsGroupBox->setLayout(pathsLayout);
+  this->pathsGroupBox->setLayout(this->pathsLayout);
 
   /*Add GroupBox for Paths to Prefs Widget Layout */
-  vLayout->addWidget(pathsGroupBox);
+  this->vLayout->addWidget(this->pathsGroupBox);
 
   /* Picture Separation Settings */
-  QGroupBox *sepGroupBox = new QGroupBox();
-  sepGroupBox->setTitle("Pictures Grouping Selection Criteria");
+  this->sepGroupBox = new QGroupBox();
+  this->sepGroupBox->setTitle("Pictures Grouping Selection Criteria");
   /* Separation Layout */
-  QVBoxLayout *sepLayout = new QVBoxLayout();
+  this->sepLayout = new QVBoxLayout();
   /* First Time */
-  h = new QHBoxLayout();
+  this->h2 = new QHBoxLayout();
   this->useFirstTimeCheckBox = new QCheckBox();
-  h->addWidget(this->useFirstTimeCheckBox);
+  this->h2->addWidget(this->useFirstTimeCheckBox);
   this->fdl = new QLabel("First Time");
   this->fdl->setEnabled(false);
-  h->addWidget(this->fdl);
-  h->addItem(sp);
+  this->h2->addWidget(this->fdl);
+  this->sp1 = new QSpacerItem(40,10,QSizePolicy::Expanding,QSizePolicy::Minimum);
+  this->h2->addItem(this->sp1);
   this->firstDate = new QDateEdit();
   this->firstDate->setEnabled(false);
-  h->addWidget(this->firstDate);
+  this->h2->addWidget(this->firstDate);
   this->firstCalButton = new QToolButton();
   this->firstCalButton->setEnabled(false);
-  h->addWidget(firstCalButton);
+  this->h2->addWidget(this->firstCalButton);
   this->firstTime = new QTimeEdit();
   this->firstTime->setEnabled(false);
-  h->addWidget(this->firstTime);
+  this->h2->addWidget(this->firstTime);
   /* Add First Date to Sep Layout */
-  sepLayout->addLayout(h);
+  //this->sepLayout->addLayout(this->h2);
   /* Second Time */
-  h = new QHBoxLayout();
+  this->h3 = new QHBoxLayout();
   this->useLastTimeCheckBox = new QCheckBox();
-  h->addWidget(this->useLastTimeCheckBox);
+  //this->h3->addWidget(this->useLastTimeCheckBox);
   this->ldl = new QLabel("Last Time");
   this->ldl->setEnabled(false);
-  h->addWidget(this->ldl);
-  h->addItem(sp);
+  //this->h3->addWidget(this->ldl);
+  this->sp2 = new QSpacerItem(40,10,QSizePolicy::Expanding,QSizePolicy::Minimum);
+  this->h3->addItem(this->sp2);
   this->lastDate = new QDateEdit();
   this->lastDate->setEnabled(false);
-  h->addWidget(this->lastDate);
+  this->h3->addWidget(this->lastDate);
   this->lastCalButton = new QToolButton();
   this->lastCalButton->setEnabled(false);
-  h->addWidget(lastCalButton);
+  this->h3->addWidget(this->lastCalButton);
   this->lastTime = new QTimeEdit();
   this->lastTime->setEnabled(false);
-  h->addWidget(this->lastTime);
+  this->h3->addWidget(this->lastTime);
   /* Add Last Date to Sep Layout */
-  sepLayout->addLayout(h);
+  this->sepLayout->addLayout(this->h3);
 
   /* Time Interval */
-  h = new QHBoxLayout();
+  this->h4 = new QHBoxLayout();
   this->useTimeInterval = new QCheckBox();
   this->useTimeInterval->setCheckState(Qt::Checked);
   this->useTimeInterval->setEnabled(false); // for now
-  h->addWidget(this->useTimeInterval);
-  l = new QLabel("Time Interval");
-  h->addWidget(l);
+  this->h4->addWidget(this->useTimeInterval);
+  this->l3 = new QLabel("Time Interval");
+  this->h4->addWidget(this->l3);
   this->timeIntervalLabel = new QLabel("30");
-  h->addWidget(this->timeIntervalLabel);
+  this->h4->addWidget(this->timeIntervalLabel);
   this->timeIntervalSlider = new QSlider(Qt::Horizontal);
   this->timeIntervalSlider->setMaximum(100);
   this->timeIntervalSlider->setMinimum(1);
   this->timeIntervalSlider->setValue(30);
-  h->addWidget(this->timeIntervalSlider);
+  this->h4->addWidget(this->timeIntervalSlider);
   this->timeIntervalUnits = new QComboBox();
   this->timeIntervalUnits->addItem("Days");
   this->timeIntervalUnits->addItem("Hours");
   this->timeIntervalUnits->addItem("Minutes");
   this->timeIntervalUnits->addItem("Seconds");
   this->timeIntervalUnits->setCurrentIndex(2);
-  h->addWidget(timeIntervalUnits);
+  this->h4->addWidget(timeIntervalUnits);
   /* Add Time Interval to Sep Layout */
-  sepLayout->addLayout(h);
+  //this->sepLayout->addLayout(this->h4);
 
   /* Distance */
-  h = new QHBoxLayout();
+  this->h5 = new QHBoxLayout();
   this->useDistanceCluster = new QCheckBox();
   this->useDistanceCluster->setCheckState(Qt::Unchecked);
   this->useDistanceCluster->setEnabled(false);
-  h->addWidget(this->useDistanceCluster);
-  l = new QLabel("Distance Cluster");
-  l->setEnabled(false);
-  h->addWidget(l);
+  this->h5->addWidget(this->useDistanceCluster);
+  this->l4 = new QLabel("Distance Cluster");
+  this->l4->setEnabled(false);
+  this->h5->addWidget(l4);
   this->distClusterLabel = new QLabel("1");
   this->distClusterLabel->setEnabled(false);
-  h->addWidget(this->distClusterLabel);
+  this->h5->addWidget(this->distClusterLabel);
   this->distClusterSlider = new QSlider(Qt::Horizontal);
   this->distClusterSlider->setMaximum(100);
   this->distClusterSlider->setMinimum(1);
   this->distClusterSlider->setValue(1);
   this->distClusterSlider->setEnabled(false);
-  h->addWidget(this->distClusterSlider);
+  this->h5->addWidget(this->distClusterSlider);
   this->distClusterUnits = new QComboBox();
   this->distClusterUnits->addItem("miles");
   this->distClusterUnits->addItem("km");
@@ -149,28 +152,28 @@ void QPrefs::setupUi(void) {
   this->distClusterUnits->addItem("m");
   this->distClusterUnits->setCurrentIndex(0);
   this->distClusterUnits->setEnabled(false);
-  h->addWidget(this->distClusterUnits);
+  this->h5->addWidget(this->distClusterUnits);
 
 
   /*QtThumbWheel *wheel = new QtThumbWheel();
   wheel->setRange(-100, 100);
-  h->addWidget(wheel);
-  /*
+  h->addWidget(wheel);*/
+
   /* Add Distamce Cluster to Sep Layout */
-  sepLayout->addLayout(h);
+  //this->sepLayout->addLayout(this->h5);
 
 
-  /* */
-  sepGroupBox->setLayout(sepLayout);
-  vLayout->addWidget(sepGroupBox);
+  
+  this->sepGroupBox->setLayout(this->sepLayout);
+  this->vLayout->addWidget(this->sepGroupBox);
   /* Sets Prefs Widget Layout */
-  QFrame *f = new QFrame();
-  f->setLayout(vLayout);
-  setWidget(f);
+  this->f = new QFrame();
+  this->f->setLayout(this->vLayout);
+  setWidget(this->f);
   /* Ok nowconnect signals */
 
-  connect(outPathButton,SIGNAL(clicked()),this,SLOT(selectOutDir()));
-  connect(inPathButton,SIGNAL(clicked()),this,SLOT(addInDir()));
+  connect(this->outPathButton,SIGNAL(clicked()),this,SLOT(selectOutDir()));
+  connect(this->inPathButton,SIGNAL(clicked()),this,SLOT(addInDir()));
   connect(this->useFirstTimeCheckBox,SIGNAL(stateChanged(int)),this,SLOT(checkUseFirstTime(int)));
   connect(this->useLastTimeCheckBox,SIGNAL(stateChanged(int)),this,SLOT(checkUseLastTime(int)));
   connect(this->useTimeInterval,SIGNAL(stateChanged(int)),this,SLOT(useTimeIntervalChecked(int)));
@@ -181,8 +184,10 @@ void QPrefs::setupUi(void) {
 }
 
 void QPrefs::checkedSubs(int state) {
+  int i;
+  i=state ; // to remove warning at compilation time
   this->needScan = true;
-  printf("need scan!\n");
+  //printf("need scan!\n");
 }
 
 void QPrefs::timeIntervalValueChanged(int v) {
@@ -196,16 +201,14 @@ void QPrefs::distClusterValueChanged(int v) {
   this->distClusterLabel->setText(value);
 }
 void QPrefs::selectOutDir() {
-  QFileDialog *dirDialog = new QFileDialog();
-  QString outDir = dirDialog->getExistingDirectory(this,"Choose Output Root Directory");
+  QString outDir = this->dirDialog->getExistingDirectory(this,"Choose Output Root Directory");
   this->outLineEdit->setText(outDir);
 }
 void QPrefs::addInDir() {
   int i;
   bool unique;
   QListWidgetItem *item;
-  QFileDialog *dirDialog = new QFileDialog();
-  QString inDir = dirDialog->getExistingDirectory(this,"Choose Output Root Directory");
+  QString inDir = this->dirDialog->getExistingDirectory(this,"Choose Output Root Directory");
   unique = true;
   for (i=0;i< this->inPathList->count();i++) {
     item = this->inPathList->item(i);
@@ -249,11 +252,15 @@ void QPrefs::checkUseLastTime(int state) {
 }
 void QPrefs::useTimeIntervalChecked(int state) {
   // For now just turn it back on
+  int i;
+  i=state;
   this->useTimeInterval->setCheckState(Qt::Checked);
 }
 
 void QPrefs::useDistClusterChecked(int state) {
   // For now just turn it back on
+  int i;
+  i=state;
   this->useDistanceCluster->setCheckState(Qt::Unchecked);
 }
 

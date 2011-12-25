@@ -5,6 +5,9 @@
 
 #include <time.h>
 
+#include <QMutex>
+
+QMutex entriesMutex;
 
 void entriesInit(struct pix_entries *pix) {
   pix->prev=NULL;
@@ -157,8 +160,8 @@ void entriesFree(struct pix_entries *out) {
 }
 
 void entriesQuicksort(struct pix_entries *entries,int left, int right) {
-  int i,ipivot,inewpivot;
-  struct pix_entries *tmp;
+  int ipivot,inewpivot;
+  //struct pix_entries *tmp;
   if (left<right) {
     ipivot = left + (right-left)/2;
     //ipivot=left+1;
@@ -173,9 +176,11 @@ struct pix_entries ** entriesSplitPerTime(struct pix_entries *entries, int delta
   bool anew=true,cont=true;
   struct pix_entries *current,**out;
 
+  entriesMutex.lock();
   // Sadly it seems we need to first loop once to figure out the number of packs and then malloc this, seems inefficient
   i=1;
   current=entries;
+  fprintf(stderr,"All right or entries is: %p\n",current);
   while (current->next!=NULL) {
     if (difftime(current->next->entry.time,current->entry.time)>delta) {
       i+=1;
@@ -214,6 +219,7 @@ struct pix_entries ** entriesSplitPerTime(struct pix_entries *entries, int delta
   }
   i+=1;
   out[i]=NULL;
+  entriesMutex.unlock();
   return out;
 }
 

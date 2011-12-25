@@ -14,6 +14,7 @@ class QGallery : public QScrollArea
   void reArrange();
   void cleanUp();
  private:
+  QMutex resizeMutex;
   QList<QWidget*> childs;
   QGridLayout *grid;
   QFrame *f;

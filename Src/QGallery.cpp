@@ -1,4 +1,5 @@
 #include <QtGui>
+#include <QMutex>
 #include <QGalleryTab.h>
 #include <pix_entries.h>
 extern struct pix_entries *entriesGet(struct pix_entries *e,int i);
@@ -20,10 +21,12 @@ QGallery::QGallery(QWidget * parent,  struct pix_entries *pix)
 
 
 void QGallery::resizeEvent(QResizeEvent *event) {
+  this->resizeMutex.lock();
   printf("Ok I am catching a resize event!: %i, %i\n",this->sizePolicy().horizontalPolicy(),this->sizePolicy().verticalPolicy());
   cleanUp();
-  this->update();
+  //this->update();
   reArrange();
+  this->resizeMutex.unlock();
 }
 
 void QGallery::setupIcons() {
