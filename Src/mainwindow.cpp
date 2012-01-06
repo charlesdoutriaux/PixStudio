@@ -17,6 +17,8 @@ void MainWindow::setupUi() {
   //centralWidget->addWidget(prefs);
   //printf("Ok dist label is: %s\n",(const char *) prefs->distClusterLabel->text().toAscii());
   this->tabs = new QTabWidget();
+  this->tabs->setTabsClosable(true);
+  this->tabs->setMovable(true);
   this->setCentralWidget(this->tabs);
   setWindowTitle("PixStudio");
   this->tb = new QToolBar();
@@ -38,10 +40,15 @@ void MainWindow::connectSignals() {
   renameAction->setEnabled(true);
   connect(renameAction,SIGNAL(triggered()),this,SLOT(renamePix()));
   connect(this->tabs,SIGNAL(currentChanged(int)),this,SLOT(newTabSelected(int)));
+  connect(tabs,SIGNAL(tabCloseRequested(int)),this,SLOT(closeATab(int)));
   this->tb->addAction(renameAction);
 
 }
 
+void MainWindow::closeATab(int i) {
+  fprintf(stderr,"closing: %i\n",i);
+  tabs->removeTab(i);
+}
 void MainWindow::newTabSelected(int tab) {
   if (tabs->count()==0) return;
   QGalleryTab *aTab = (QGalleryTab *)(this->tabs->widget(tab));
@@ -121,9 +128,12 @@ void MainWindow::refreshProjects() {
   i=0;
   iter=split[0];
   while (iter!=NULL) {
-    sprintf(path,"Project: %i",i);
+    time_t t = iter->entry.time;
+    char date[11];
+    strftime(date,11,"%Y-%m-%d",localtime(&t));
+    sprintf(path,"%s (%i)",date,i);
     this->tabs->addTab(new QGalleryTab(this,iter),tr(path));
-    printf("Pack: %i, n%s\n",i,iter->entry.name);
+    //printf("Pack: %i, n%s\n",i,iter->entry.name);
     //entriesFree(iter);
     //printf("len: %i\n",entriesLen(&split[i]));
     i+=1;

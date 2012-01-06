@@ -21,6 +21,7 @@ class MainWindow : public QMainWindow
   void refreshProjects();
   void renamePix();
   void newTabSelected(int tab);
+  void closeATab(int i);
   /* signals: */
 };
 

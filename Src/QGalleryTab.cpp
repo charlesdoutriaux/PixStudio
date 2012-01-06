@@ -8,8 +8,16 @@ QGalleryTab::QGalleryTab(QWidget * parent, struct pix_entries *pix)
   this->iconsSizeSlider->setMinimum(10);
   this->iconsSizeSlider->setValue(100);
 
+  time_t t = pix->entry.time;
+  char date[25];
+  strftime(date,25,"%Y-%m-%d, Project ",localtime(&t));
+
+  this->name = new QLineEdit();
+  name->setText(date);
   //QFrame *f = new QFrame();
   QVBoxLayout *v = new QVBoxLayout();
+
+  v->addWidget(name);
   QHBoxLayout *h = new QHBoxLayout();
   this->iconsSizeLabel = new QLabel("Icons Size: 100px");
   h->addWidget(this->iconsSizeLabel);
