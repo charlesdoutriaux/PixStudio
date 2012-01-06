@@ -10,11 +10,12 @@ class MainWindow : public QMainWindow
   Q_OBJECT
     public: 
   MainWindow();
+ public:
+  QPrefs *prefs;
+  QTabWidget *tabs;
  private:
   void setupUi();
   void connectSignals();
-  QTabWidget *tabs;
-  QPrefs *prefs;
   QToolBar *tb;
   struct pix_entries *pix;
   public slots: 

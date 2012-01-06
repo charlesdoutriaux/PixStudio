@@ -61,11 +61,11 @@ void entriesPrint(struct pix_entries *entries) {
   }
   i=0;
   while (entries->next!=NULL) {
-    printf("%i: %s--%s\n",i,entries->entry.name,ctime(&entries->entry.time));
+    //printf("%i: %s--%s\n",i,entries->entry.name,ctime(&entries->entry.time));
     i+=1;
     entries=entries->next;
   }
-  printf("%i: %s--%s\n",i,entries->entry.name,ctime(&entries->entry.time));
+  //printf("%i: %s--%s\n",i,entries->entry.name,ctime(&entries->entry.time));
   return;
 }
 
@@ -180,7 +180,7 @@ struct pix_entries ** entriesSplitPerTime(struct pix_entries *entries, int delta
   // Sadly it seems we need to first loop once to figure out the number of packs and then malloc this, seems inefficient
   i=1;
   current=entries;
-  fprintf(stderr,"All right or entries is: %p\n",current);
+  //fprintf(stderr,"All right or entries is: %p\n",current);
   while (current->next!=NULL) {
     if (difftime(current->next->entry.time,current->entry.time)>delta) {
       i+=1;

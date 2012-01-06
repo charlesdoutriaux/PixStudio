@@ -3,6 +3,7 @@
 #include <QtGui>
 #include <QGallery.h>
 #include <pix_entries.h>
+#include <preferences.h>
 
 class QGalleryTab : public QWidget
 {
@@ -13,6 +14,8 @@ class QGalleryTab : public QWidget
   QSlider *iconsSizeSlider;
   QGallery *gallery;
   QLineEdit *name;
+  QPrefs *prefs;
+  QTabWidget *tabs;
   public slots:
   void newIconSize(int value);
   void renamePix(bool b);

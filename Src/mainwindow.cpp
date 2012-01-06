@@ -46,7 +46,6 @@ void MainWindow::connectSignals() {
 }
 
 void MainWindow::closeATab(int i) {
-  fprintf(stderr,"closing: %i\n",i);
   tabs->removeTab(i);
 }
 void MainWindow::newTabSelected(int tab) {
@@ -78,7 +77,6 @@ void MainWindow::refreshProjects() {
     return;
   }
   while (this->tabs->count()>0) {
-    fprintf(stderr,"Tabs: %i\n",tabs->count());
     this->tabs->removeTab(0);
   }
   //fprintf(stderr,"needScan: %i\n",this->prefs->needScan);
@@ -92,10 +90,10 @@ void MainWindow::refreshProjects() {
     entriesInit(this->pix);
     //entriesPrint(this->pix);
     // Ok now scan all dirs
-    fprintf(stderr,"count: %i\n",this->prefs->inPathList->count());
+    //fprintf(stderr,"count: %i\n",this->prefs->inPathList->count());
     for(i=0;i<this->prefs->inPathList->count();i++) {
       strcpy(path,this->prefs->inPathList->item(i)->text().toAscii().data());
-      fprintf(stderr,"PATH: %s\n",path);
+      //fprintf(stderr,"PATH: %s\n",path);
       if (this->prefs->scanSubs->checkState()==Qt::Checked) {
 	scanDir(path,this->pix,-1);
       }

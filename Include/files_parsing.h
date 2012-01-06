@@ -4,6 +4,6 @@
 //#include <QtGui>
 #ifndef FILESPARSING_H
 #define FILESPARSING_H
-extern void scanDir(char *path, struct pix_entries *entries,unsigned int maxsub);
+extern void scanDir(char *path, struct pix_entries *entries,int maxsub);
 
 #endif

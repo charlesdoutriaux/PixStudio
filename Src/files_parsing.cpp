@@ -55,7 +55,7 @@ float readAngle(QExifValue entry){
   float sec;
   QVector<QExifURational> vals = entry.toRationalVector();
   sec=0;
-  printf("ok we are getting an entry with: %i\n",entry.count());
+  //printf("ok we are getting an entry with: %i\n",entry.count());
  // First actual seconds
   QExifURational r = vals.at(2);
  sec = (float)r.first/(float)r.second;
@@ -67,15 +67,12 @@ float readAngle(QExifValue entry){
   return (float)r.first/(float)r.second + sec/3600.;
 }
 
-void _scanDir(char *path, struct pix_entries *entries,unsigned int sub,unsigned int maxsub) {
-  DIR *diri,*dirtmp;
+void _scanDir(char *path, struct pix_entries *entries,unsigned int sub,int maxsub) {
+  DIR *diri;
  struct dirent *dire;
- FILE *afile=NULL;
  struct stat buf;
  QExifImageHeader *QExifFile;
- QExifValue *QExifValue;
  int err;
- unsigned int i,j;
  char fnm[NAME_MAX_LENGTH];
  struct pix_entries *pixEntry;
  int nentries;
@@ -147,7 +144,7 @@ void _scanDir(char *path, struct pix_entries *entries,unsigned int sub,unsigned 
  closedir(diri);
 //printf("Discovered: %i valid files\n",nentries);
 }
-void scanDir(char *path, struct pix_entries *entries,unsigned int maxsub) {
+void scanDir(char *path, struct pix_entries *entries, int maxsub) {
   return _scanDir(path,entries,0,maxsub);
 }
 
