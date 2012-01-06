@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
  <qresource>
      <file>Icons/refresh.png</file>
+     <file>Icons/create_projects.png</file>
  </qresource>
  </RCC>

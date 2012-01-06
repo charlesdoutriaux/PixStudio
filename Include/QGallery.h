@@ -13,6 +13,7 @@ class QGallery : public QScrollArea
   void resizeEvent(QResizeEvent *event);
   void reArrange();
   void cleanUp();
+  void redraw();
  private:
   QMutex resizeMutex;
   QList<QWidget*> childs;

@@ -20,13 +20,17 @@ QGallery::QGallery(QWidget * parent,  struct pix_entries *pix)
 }
 
 
-void QGallery::resizeEvent(QResizeEvent *event) {
+void QGallery::redraw() {
   this->resizeMutex.lock();
-  printf("Ok I am catching a resize event!: %i, %i\n",this->sizePolicy().horizontalPolicy(),this->sizePolicy().verticalPolicy());
   cleanUp();
   //this->update();
   reArrange();
   this->resizeMutex.unlock();
+};
+
+void QGallery::resizeEvent(QResizeEvent *event) {
+  //printf("Ok I am catching a resize event!: %i, %i\n",this->sizePolicy().horizontalPolicy(),this->sizePolicy().verticalPolicy());
+  redraw();
 }
 
 void QGallery::setupIcons() {
@@ -72,9 +76,9 @@ void QGallery::setupIcons() {
 
 void QGallery::cleanUp() {
 
-  int i,j,n,w;
-  QSize s = this->parentWidget()->size();
-  fprintf(stderr,"REARRANGE: %i elts into a %ix%i frame\n",this->childs.size(),s.width(),s.height());
+  int i;
+  QSize s = this->size();
+  //fprintf(stderr,"REARRANGE: %i elts into a %ix%i frame\n",this->childs.size(),s.width(),s.height());
   for (i=0;i<this->grid->count();i++) {
     QLayoutItem *it = this->grid->itemAt(i);
     this->grid->removeItem(it);
@@ -88,28 +92,28 @@ void QGallery::reArrange() {
 
   int i,j,n,w;  
   int W=((QGalleryTab *)this->parentWidget())->iconsSizeSlider->value();
- 
   QSize s = this->parentWidget()->size();
+  float S = .75*s.width();
   
-    n=0;
-    i=0;
-    while (n<this->childs.size()) {
-      w= 0;
-      j=0;
-      fprintf(stderr,"i: %i, w\n",i);
-      while ((n<this->childs.size()) && ((w<s.width()-W) || (w==0))) {
-	this->grid->addWidget(childs[n],i,j);
-	((QCheckBox *)(childs)[n])->setIconSize(QSize(W,W));
-	childs[n]->show();
-	fprintf(stderr,"Adding a widget at: %i, %i\n",i,j);
-	w+=W;
-	j++;
-	n++;
-      }
-      i++;
+  n=0;
+  i=0;
+  while (n<this->childs.size()) {
+    w= 0;
+    j=0;
+    //fprintf(stderr,"i: %i, w\n",i);
+    while ((n<this->childs.size()) && (((float)w<S-(float)W) || (w==0))) {
+      this->grid->addWidget(childs[n],i,j);
+      ((QCheckBox *)(childs)[n])->setIconSize(QSize(W,W));
+      childs[n]->show();
+      //fprintf(stderr,"Adding a widget at: %i, %i\n",i,j);
+      w+=W;
+      j++;
+      n++;
     }
-    fprintf(stderr,"ok we now have : %i widgets\n",n);
-    //setLayout(g);
-    //}
+    i++;
+  }
+  //fprintf(stderr,"ok we now have : %i widgets\n",n);
+  //setLayout(g);
+  //}
 }
 

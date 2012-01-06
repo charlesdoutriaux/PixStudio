@@ -6,6 +6,7 @@
 QPrefs::QPrefs(const QString & title, QWidget * parent = 0, Qt::WindowFlags flags = 0) 
   :QDockWidget(title,parent,flags) {
   setupUi();
+  this->needScan=true;
 };
 
 void QPrefs::setupUi(void) {
@@ -80,14 +81,14 @@ void QPrefs::setupUi(void) {
   this->firstTime->setEnabled(false);
   this->h2->addWidget(this->firstTime);
   /* Add First Date to Sep Layout */
-  //this->sepLayout->addLayout(this->h2);
+  this->sepLayout->addLayout(this->h2);
   /* Second Time */
   this->h3 = new QHBoxLayout();
   this->useLastTimeCheckBox = new QCheckBox();
-  //this->h3->addWidget(this->useLastTimeCheckBox);
+  this->h3->addWidget(this->useLastTimeCheckBox);
   this->ldl = new QLabel("Last Time");
   this->ldl->setEnabled(false);
-  //this->h3->addWidget(this->ldl);
+  this->h3->addWidget(this->ldl);
   this->sp2 = new QSpacerItem(40,10,QSizePolicy::Expanding,QSizePolicy::Minimum);
   this->h3->addItem(this->sp2);
   this->lastDate = new QDateEdit();
@@ -125,7 +126,7 @@ void QPrefs::setupUi(void) {
   this->timeIntervalUnits->setCurrentIndex(2);
   this->h4->addWidget(timeIntervalUnits);
   /* Add Time Interval to Sep Layout */
-  //this->sepLayout->addLayout(this->h4);
+  this->sepLayout->addLayout(this->h4);
 
   /* Distance */
   this->h5 = new QHBoxLayout();
@@ -160,7 +161,7 @@ void QPrefs::setupUi(void) {
   h->addWidget(wheel);*/
 
   /* Add Distamce Cluster to Sep Layout */
-  //this->sepLayout->addLayout(this->h5);
+  this->sepLayout->addLayout(this->h5);
 
 
   

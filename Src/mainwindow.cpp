@@ -33,7 +33,23 @@ void MainWindow::connectSignals() {
   refreshAction->setEnabled(true);
   connect(refreshAction,SIGNAL(triggered()),this,SLOT(refreshProjects()));
   this->tb->addAction(refreshAction);
+  QAction *renameAction = new QAction(QIcon(":Icons/create_projects.png"),tr("Rename"),this);
+  renameAction->setToolTip(tr("Rename Pix Into Projects Dirs"));
+  renameAction->setEnabled(true);
+  connect(renameAction,SIGNAL(triggered()),this,SLOT(renamePix()));
+  connect(this->tabs,SIGNAL(currentChanged(int)),this,SLOT(newTabSelected(int)));
+  this->tb->addAction(renameAction);
 
+}
+
+void MainWindow::newTabSelected(int tab) {
+  if (tabs->count()==0) return;
+  QGalleryTab *aTab = (QGalleryTab *)(this->tabs->widget(tab));
+  aTab->gallery->redraw();
+};
+
+void MainWindow::renamePix() {
+  fprintf(stderr,"Ok would rename the files here\n");
 }
 
 void MainWindow::refreshProjects() {
@@ -55,20 +71,24 @@ void MainWindow::refreshProjects() {
     return;
   }
   while (this->tabs->count()>0) {
+    fprintf(stderr,"Tabs: %i\n",tabs->count());
     this->tabs->removeTab(0);
   }
+  //fprintf(stderr,"needScan: %i\n",this->prefs->needScan);
   if (this->prefs->needScan) {
-    printf("Here we scan the directories\n");
+    //printf("Here we scan the directories\n");
     if (this->pix!=NULL) {
-      printf("Cleaning old one!\n");
+      //printf("Cleaning old one!\n");
       entriesFree(this->pix);
     }
     this->pix = (struct pix_entries *)malloc(sizeof(struct pix_entry));
     entriesInit(this->pix);
-    entriesPrint(this->pix);
+    //entriesPrint(this->pix);
     // Ok now scan all dirs
+    fprintf(stderr,"count: %i\n",this->prefs->inPathList->count());
     for(i=0;i<this->prefs->inPathList->count();i++) {
       strcpy(path,this->prefs->inPathList->item(i)->text().toAscii().data());
+      fprintf(stderr,"PATH: %s\n",path);
       if (this->prefs->scanSubs->checkState()==Qt::Checked) {
 	scanDir(path,this->pix,-1);
       }
@@ -96,7 +116,7 @@ void MainWindow::refreshProjects() {
   else if (this->prefs->timeIntervalUnits->currentText().compare(QString("Minutes"))==0) {
     seconds*=60;
   }
-  printf("Time sparator: %i\n",seconds);
+  //printf("Time sparator: %i\n",seconds);
   split = entriesSplitPerTime(this->pix,seconds);
   i=0;
   iter=split[0];

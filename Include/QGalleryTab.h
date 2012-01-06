@@ -12,7 +12,9 @@ class QGalleryTab : public QWidget
   QLabel *iconsSizeLabel;
   QSlider *iconsSizeSlider;
   QGallery *gallery;
-  //  public slots:
+  public slots:
+  void newIconSize(int value);
+  void renamePix(bool b);
 };
 
 #endif

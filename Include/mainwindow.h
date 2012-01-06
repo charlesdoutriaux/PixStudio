@@ -19,6 +19,8 @@ class MainWindow : public QMainWindow
   struct pix_entries *pix;
   public slots: 
   void refreshProjects();
+  void renamePix();
+  void newTabSelected(int tab);
   /* signals: */
 };
 
