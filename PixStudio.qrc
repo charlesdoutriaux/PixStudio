@@ -2,5 +2,6 @@
  <qresource>
      <file>Icons/refresh.png</file>
      <file>Icons/create_projects.png</file>
+     <file>Icons/app.png</file>
  </qresource>
  </RCC>

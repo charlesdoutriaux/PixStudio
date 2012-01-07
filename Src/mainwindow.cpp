@@ -21,6 +21,7 @@ void MainWindow::setupUi() {
   this->tabs->setMovable(true);
   this->setCentralWidget(this->tabs);
   setWindowTitle("PixStudio");
+  setWindowIcon(QIcon(":Icons/app.png"));
   this->tb = new QToolBar();
   this->tb->setFloatable(true);
   addToolBar(this->tb);
