@@ -14,9 +14,9 @@ class QGallery : public QScrollArea
   void reArrange();
   void cleanUp();
   void redraw();
+  QList<QWidget*> childs;
  private:
   QMutex resizeMutex;
-  QList<QWidget*> childs;
   QGridLayout *grid;
   QFrame *f;
   time_t lastUpdate; //timer to make sure we don't update too often

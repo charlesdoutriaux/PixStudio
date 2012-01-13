@@ -77,7 +77,7 @@ void _scanDir(char *path, struct pix_entries *entries,unsigned int sub,int maxsu
  struct pix_entries *pixEntry;
  int nentries;
 
- //printf("Lookinga at : %s\n",path);
+ fprintf(stderr,"Looking at : %s\n",path);
  nentries = 0;
  diri = opendir(path);
  if (diri==NULL) {
@@ -94,7 +94,7 @@ void _scanDir(char *path, struct pix_entries *entries,unsigned int sub,int maxsu
  while ((dire = readdir(diri))!=NULL) {
    strcpy(fnm,path);
    strcat(fnm,"/");
-   //printf("name: %s\n",dire->d_name);
+   fprintf(stderr,"\tname: %s\n",dire->d_name);
    strcat(fnm,dire->d_name);
    err = stat(fnm,&buf);
    if (err==-1) continue;
@@ -103,7 +103,7 @@ void _scanDir(char *path, struct pix_entries *entries,unsigned int sub,int maxsu
      if ((strcmp(&fnm[strlen(fnm)-2],"/.")==0)||(strcmp(&fnm[strlen(fnm)-3],"/..")==0)) {
        continue;
      };
-     if ((sub<maxsub)||(maxsub<0)) _scanDir(fnm,entries,sub+1,maxsub);
+     if (((int)sub<maxsub)||(maxsub<0)) _scanDir(fnm,entries,sub+1,maxsub);
      continue;
    }
    // Ok now trying to load the exif info

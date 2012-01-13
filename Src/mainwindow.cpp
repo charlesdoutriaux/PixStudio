@@ -19,6 +19,7 @@ void MainWindow::setupUi() {
   this->tabs = new QTabWidget();
   this->tabs->setTabsClosable(true);
   this->tabs->setMovable(true);
+  this->tabs->setUsesScrollButtons(true);
   this->setCentralWidget(this->tabs);
   setWindowTitle("PixStudio");
   setWindowIcon(QIcon(":Icons/app.png"));

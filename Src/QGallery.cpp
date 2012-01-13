@@ -45,27 +45,32 @@ void QGallery::setupIcons() {
   for (i=0;i<N;i++) {
     	b = new QCheckBox();
 	pe = entriesGet(this->pix,i);
-	QImageReader reader; 
 	sprintf(tip,"%s\n%sLon:%.2f\nLat:%.2f",pe->entry.name,asctime(localtime(&pe->entry.time)),pe->entry.lon,pe->entry.lat);
-	// Set image name
-	reader.setFileName(pe->entry.name);
+	if (pe->entry.hasExif) {
+	  QImageReader reader; 
+	  // Set image name
+	  reader.setFileName(pe->entry.name);
 	
-	// Read image current size
-	QSize imageSize = reader.size();
+	  // Read image current size
+	  QSize imageSize = reader.size();
 	
-	// Scale image to fit to screen
-	imageSize.scale(QSize(W,W), Qt::KeepAspectRatio);
+	  // Scale image to fit to screen
+	  imageSize.scale(QSize(W,W), Qt::KeepAspectRatio);
+	  
+	  // Set wanted image size for reader
+	  reader.setScaledSize(imageSize);
+	  
+	  // Read image
+	  QImage image = reader.read();
+	  
+	  // Make QPixmap (if needed)
+	  QPixmap pixmap = QPixmap::fromImage(image);
 	
-	// Set wanted image size for reader
-	reader.setScaledSize(imageSize);
-	
-	// Read image
-	QImage image = reader.read();
-	
-	// Make QPixmap (if needed)
-	QPixmap pixmap = QPixmap::fromImage(image);
-	
-	icon= QIcon(pixmap);
+	  icon= QIcon(pixmap);
+	}
+	else {
+	  icon = QIcon(":Icons/app.png");
+	};
 	b->setIcon(icon);
 	//b->setIconSize( QSize(W,W));
 	b->setChecked(Qt::Checked);

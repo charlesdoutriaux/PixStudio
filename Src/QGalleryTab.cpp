@@ -7,7 +7,7 @@ QGalleryTab::QGalleryTab(QWidget * parent, struct pix_entries *pix)
   this->prefs = ((MainWindow *)parent)->prefs;
   this->tabs = ((MainWindow *)parent)->tabs;
   this->iconsSizeSlider = new QSlider(Qt::Horizontal);
-  this->iconsSizeSlider->setMaximum(200);
+  this->iconsSizeSlider->setMaximum(300);
   this->iconsSizeSlider->setMinimum(10);
   this->iconsSizeSlider->setValue(100);
 
@@ -77,14 +77,16 @@ void QGalleryTab::renamePix(bool b) {
   QStringList newfiles;
   while (iter!=NULL) {
     sprintf(num," %.3i.",i);
+    if (((QCheckBox *)(this->gallery->childs.at(i)))->checkState()==Qt::Checked) {
+      QString in = iter->entry.name;
+      QStringList sp = in.split(".");
+      QString out = QString(pname).append(QDir::separator()).append(this->name->text()).append(num).append(sp.at(sp.size()-1));
+      newfiles.append(out);
+      //fprintf(stderr,"would rename: %s to %s\n",iter->entry.name,out.toAscii().data());
+      d.rename(in,out);
+    }
     i+=1;
-    QString in = iter->entry.name;
-    QStringList sp = in.split(".");
-    QString out = QString(pname).append(QDir::separator()).append(this->name->text()).append(num).append(sp.at(sp.size()-1));
-    newfiles.append(out);
-    //fprintf(stderr,"would rename: %s to %s\n",iter->entry.name,out.toAscii().data());
     iter=iter->next;
-    d.rename(in,out);
   }
   mbox.setText(QString("Renamed files to:\n").append(newfiles.join("\n")));
   mbox.exec();
