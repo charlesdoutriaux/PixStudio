@@ -30,6 +30,18 @@ int isOkFromExt(char *name) {
   return 1;
 }
 
+int isMovieFromExt(char *name) {
+  int n,i,m;
+#define NMDTYPES 6
+  char types[NMDTYPES][5] = { "3gp","3GP","mp4","MP4","avi","AVI"};
+  n=strlen(name);
+  for(i=0;i<NMDTYPES;i++) {
+    m=strlen(types[i]);
+    if (strcmp(&name[n-m],types[i])==0) return 0;
+  }
+  return 1;
+}
+
 time_t readTime(QExifValue entry) {
   char asciitime[NAME_MAX_LENGTH];
   struct tm *tm;
@@ -94,7 +106,7 @@ void _scanDir(char *path, struct pix_entries *entries,unsigned int sub,int maxsu
  while ((dire = readdir(diri))!=NULL) {
    strcpy(fnm,path);
    strcat(fnm,"/");
-   fprintf(stderr,"\tname: %s\n",dire->d_name);
+   //fprintf(stderr,"\tname: %s\n",dire->d_name);
    strcat(fnm,dire->d_name);
    err = stat(fnm,&buf);
    if (err==-1) continue;
@@ -108,7 +120,14 @@ void _scanDir(char *path, struct pix_entries *entries,unsigned int sub,int maxsu
    }
    // Ok now trying to load the exif info
    QExifFile = new QExifImageHeader();
-   bool okExif = QExifFile->loadFromJpeg(fnm);
+   //printf("Ok testing: %s, %i\n",fnm,isMovieFromExt(fnm));
+   bool okExif;
+   if (isMovieFromExt(fnm)!=0) {
+     okExif = QExifFile->loadFromJpeg(fnm);
+   } 
+   else {
+     okExif = false;
+   }
    if ((isOkFromExt(dire->d_name)==0)||(okExif)) {
      //Ok it's a valid file, add an entry, go to last entry
      if (strcmp(pixEntry->entry.name,"")!=0) { /* already full need to createa new one */

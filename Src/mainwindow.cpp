@@ -103,6 +103,9 @@ void MainWindow::refreshProjects() {
 	scanDir(path,this->pix,0);
       }
     }
+    /* Ok seems like we need to sort this thing! */
+    entriesQuicksort(this->pix,0,entriesLen(this->pix)-1);
+
   }
   if (this->pix == NULL) {
      QMessageBox mBox;
@@ -123,7 +126,6 @@ void MainWindow::refreshProjects() {
   else if (this->prefs->timeIntervalUnits->currentText().compare(QString("Minutes"))==0) {
     seconds*=60;
   }
-  //printf("Time sparator: %i\n",seconds);
   split = entriesSplitPerTime(this->pix,seconds);
   i=0;
   iter=split[0];

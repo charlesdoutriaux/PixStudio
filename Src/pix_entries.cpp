@@ -161,6 +161,7 @@ void entriesFree(struct pix_entries *out) {
 
 void entriesQuicksort(struct pix_entries *entries,int left, int right) {
   int ipivot,inewpivot;
+  //fprintf(stderr,"Ok entries sorting\n");
   //struct pix_entries *tmp;
   if (left<right) {
     ipivot = left + (right-left)/2;

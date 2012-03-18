@@ -26,7 +26,7 @@ void QPrefs::setupUi(void) {
   this->h = new QHBoxLayout();
   this->h->addWidget(this->l);
   this->outLineEdit = new QLineEdit();
-  this->outLineEdit->setText(tr("/Users/doutriaux1/Desktop"));
+  this->outLineEdit->setText(tr("/Volumes/HOME/Pictures"));
   this->h->addWidget(this->outLineEdit);
   this->outPathButton = new QToolButton();
   this->h->addWidget(this->outPathButton);
@@ -47,7 +47,7 @@ void QPrefs::setupUi(void) {
   this->h1->addWidget(this->inPathButton);
   this->v1->addLayout(this->h1);
   this->inPathList = new QPathListWidget();
-  this->inPathList->addItem(tr("/Users/doutriaux1/Desktop"));
+  this->inPathList->addItem(tr("/Volume/HOME"));
   this->v1->addWidget(this->inPathList);
   this->pathsLayout->addLayout(this->v1);
 
